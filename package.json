@@ -1,16 +1,46 @@
 {
   "author": "Andrew Rahn <andy@modernlogic.io>",
+  "bin": "../dist/cli/index.ts",
   "dependencies": {
   },
   "description": "FAST visual regression testing for React Native",
   "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "@types/node": "^18.7.14",
+    "@types/pixelmatch": "^5.2.4",
+    "@typescript-eslint/eslint-plugin": "^5.36.1",
+    "@typescript-eslint/parser": "^5.36.1",
+    "eslint": "^8.23.0",
+    "eslint-config-standard-with-typescript": "^22.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.2.5",
+    "eslint-plugin-promise": "^6.0.1",
+    "import-sort-style-module": "^6.0.0",
+    "prettier": "^2.7.1",
+    "prettier-plugin-import-sort": "^0.0.7",
+    "typescript": "^4.8.2"
   },
   "files": [
+    "dist/",
+    "!dist/**/*.test.*",
+    "scripts/",
+    "README.md"
   ],
+  "importSort": {
+    ".js, .jsx, .ts, .tsx": {
+      "parser": "typescript",
+      "style": "module"
+    }
+  },
   "license": "UNLICENSED",
   "name": "@modernlogic/snap",
   "packageManager": "yarn@3.2.1",
   "scripts": {
+    "build": "tsc && chmod +x ./dist/index.js",
+    "lint": "eslint",
+    "prettier:apply": "prettier --write 'lib/**/*.{js,ts,tsx}'",
+    "prettier:check": "prettier --check 'lib/**/*.{js,ts,tsx}'"
   },
+  "types": "./dist/index.d.ts",
   "version": "0.0.1"
 }
