@@ -1,0 +1,16 @@
+{
+  "author": "Andrew Rahn <andy@modernlogic.io>",
+  "dependencies": {
+  },
+  "description": "FAST visual regression testing for React Native",
+  "devDependencies": {
+  },
+  "files": [
+  ],
+  "license": "UNLICENSED",
+  "name": "@modernlogic/snap",
+  "packageManager": "yarn@3.2.1",
+  "scripts": {
+  },
+  "version": "0.0.1"
+}
