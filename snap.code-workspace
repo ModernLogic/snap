@@ -1,0 +1,27 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.html.ejs": "html",
+			"*.txt.ejs": "txt"
+		},
+		"typescript.tsdk": "node_modules/typescript/lib",
+		"workbench.editor.restoreViewState": false,
+        "workbench.colorCustomizations": {
+          "activityBar.background": "#4d3644",
+          "activityBar.foreground": "#f1f4f2",
+          "titleBar.activeBackground": "#3c5f56",
+          "titleBar.activeForeground": "#b4fec3",
+		  "titleBar.inactiveBackground": "#111111",
+		  "titleBar.inactiveForeground": "#4c6f76",
+		  "tab.activeBackground": "#3c5f56",
+		  "tab.activeForeground": "#fff",
+		  "tab.unfocusedActiveBackground": "#305050",
+		  "tab.activeBorderTop": "#aaa",
+        }
+	}
+}
