@@ -1,6 +1,6 @@
 {
   "author": "Andrew Rahn <andy@modernlogic.io>",
-  "bin": "../dist/cli/index.ts",
+  "bin": "./dist/cli/index.ts",
   "dependencies": {
     "pixelmatch": "^5.3.0",
     "pngjs": "^6.0.0",
@@ -41,7 +41,7 @@
   "name": "@modernlogic/snap",
   "packageManager": "yarn@3.2.1",
   "scripts": {
-    "build": "tsc && chmod +x ./dist/index.js",
+    "build": "tsc && chmod +x ./dist/cli/index.js",
     "lint": "eslint",
     "prettier:apply": "prettier --write 'lib/**/*.{js,ts,tsx}'",
     "prettier:check": "prettier --check 'lib/**/*.{js,ts,tsx}'"

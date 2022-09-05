@@ -1,4 +1,5 @@
 module.exports = {
+  parser: '@typescript-eslint/parser', // Specifies the ESLint parser
   env: {
     browser: true,
     es2021: true
@@ -8,7 +9,9 @@ module.exports = {
   ],
   parserOptions: {
     ecmaVersion: 'latest',
-    sourceType: 'module'
+    sourceType: 'module',
+    project: ['./tsconfig.json']
+
   },
   rules: {
   }

@@ -1,0 +1,38 @@
+{
+  "files.associations": {
+    "*.html.ejs": "html",
+    "*.txt.ejs": "txt"
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescript"],
+  "editor.formatOnSave": true,
+  "[javascript]": {
+    "editor.formatOnSave": false
+  },
+  "[javascriptreact]": {
+    "editor.formatOnSave": false
+  },
+  "[typescript]": {
+    "editor.formatOnSave": false
+  },
+  "[typescriptreact]": {
+    "editor.formatOnSave": false
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    ".jest": true
+  },
+  "files.exclude": {
+    "**/dist": true
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#3280a1",
+    "activityBar.foreground": "#f8FBFD",
+    "titleBar.activeBackground": "#3280a1",
+    "titleBar.activeForeground": "#f8FBFD"
+  }
+}
