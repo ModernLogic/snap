@@ -1,23 +1,16 @@
 {
   "author": "Andrew Rahn <andy@modernlogic.io>",
   "bin": "./dist/cli/index.js",
-  "main": "./dist/index.js",
   "dependencies": {
     "pixelmatch": "^5.3.0",
     "pngjs": "^6.0.0",
     "yargs": "^17.5.1"
   },
-  "peerDependencies": {
-    "@react-navigation/native": "*",
-    "@react-navigation/stack": "*",
-    "react": "*",
-    "react-native": "*",
-    "unstated-next": "*"
-  },
   "description": "FAST visual regression testing for React Native",
   "devDependencies": {
     "@react-navigation/native": "*",
     "@react-navigation/stack": "*",
+    "@release-it/conventional-changelog": "^5.1.0",
     "@tsconfig/node16": "^1.0.3",
     "@types/node": "^18.7.14",
     "@types/pixelmatch": "^5.2.4",
@@ -35,6 +28,7 @@
     "import-sort-style-module": "^6.0.0",
     "prettier": "^2.7.1",
     "prettier-plugin-import-sort": "^0.0.7",
+    "release-it": "*",
     "typescript": "^4.8.2",
     "unstated-next": "*"
   },
@@ -51,13 +45,43 @@
     }
   },
   "license": "UNLICENSED",
+  "main": "./dist/index.js",
   "name": "@modernlogic/snap",
   "packageManager": "yarn@3.2.1",
+  "peerDependencies": {
+    "@react-navigation/native": "*",
+    "@react-navigation/stack": "*",
+    "react": "*",
+    "react-native": "*",
+    "unstated-next": "*"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "chore: release ${version}",
+      "tagName": "v${version}"
+    },
+    "github": {
+      "release": true
+    },
+    "npm": {
+      "publish": true
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "angular"
+      }
+    }
+  },
+  "repository": "https://github.com/ModernLogic/snap",
   "scripts": {
     "build": "tsc && chmod +x ./dist/cli/index.js",
     "lint": "eslint",
     "prettier:apply": "prettier --write 'lib/**/*.{js,ts,tsx}'",
-    "prettier:check": "prettier --check 'lib/**/*.{js,ts,tsx}'"
+    "prettier:check": "prettier --check 'lib/**/*.{js,ts,tsx}'",
+    "release": "release-it"
   },
   "types": "./dist/index.d.ts",
   "version": "0.0.1"
