@@ -1,17 +1,28 @@
 {
   "author": "Andrew Rahn <andy@modernlogic.io>",
-  "bin": "./dist/cli/index.ts",
+  "bin": "./dist/cli/index.js",
+  "main": "./dist/index.js",
   "dependencies": {
     "pixelmatch": "^5.3.0",
     "pngjs": "^6.0.0",
     "yargs": "^17.5.1"
   },
+  "peerDependencies": {
+    "@react-navigation/native": "*",
+    "@react-navigation/stack": "*",
+    "react": "*",
+    "react-native": "*"
+  },
   "description": "FAST visual regression testing for React Native",
   "devDependencies": {
+    "@react-navigation/native": "*",
+    "@react-navigation/stack": "*",
     "@tsconfig/node16": "^1.0.3",
     "@types/node": "^18.7.14",
     "@types/pixelmatch": "^5.2.4",
     "@types/pngjs": "^6.0.1",
+    "@types/react": "*",
+    "@types/react-native": "*",
     "@types/yargs": "^17.0.12",
     "@typescript-eslint/eslint-plugin": "^5.36.1",
     "@typescript-eslint/parser": "^5.36.1",
