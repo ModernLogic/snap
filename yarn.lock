@@ -367,12 +367,14 @@ __metadata:
     prettier: ^2.7.1
     prettier-plugin-import-sort: ^0.0.7
     typescript: ^4.8.2
+    unstated-next: "*"
     yargs: ^17.5.1
   peerDependencies:
     "@react-navigation/native": "*"
     "@react-navigation/stack": "*"
     react: "*"
     react-native: "*"
+    unstated-next: "*"
   bin:
     snap: ./dist/cli/index.js
   languageName: unknown
@@ -2905,6 +2907,13 @@ __metadata:
     has-symbols: ^1.0.3
     which-boxed-primitive: ^1.0.2
   checksum: b7a1cf5862b5e4b5deb091672ffa579aa274f648410009c81cca63fed3b62b610c4f3b773f912ce545bb4e31edc3138975b5bc777fc6e4817dca51affb6380e9
+  languageName: node
+  linkType: hard
+
+"unstated-next@npm:*":
+  version: 1.1.0
+  resolution: "unstated-next@npm:1.1.0"
+  checksum: 8e1c75ea3fe524268a52d12298d3f2f097db2c6292d638a59011ad52eef467e8416e1f523d1deaceefccb3b877f2bd3bf43f5014967a9caa6ae537d0441f09d2
   languageName: node
   linkType: hard
 

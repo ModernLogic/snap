@@ -1,6 +1,7 @@
 {
   "extends": "@tsconfig/node16/tsconfig.json",
   "compilerOptions": {
+    "jsx": "react",
     "module": "NodeNext",
     /* Emit */
     "declaration": true,                                 /* Generate .d.ts files from TypeScript and JavaScript files in your project. */

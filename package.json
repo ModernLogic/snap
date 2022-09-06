@@ -11,7 +11,8 @@
     "@react-navigation/native": "*",
     "@react-navigation/stack": "*",
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "unstated-next": "*"
   },
   "description": "FAST visual regression testing for React Native",
   "devDependencies": {
@@ -34,7 +35,8 @@
     "import-sort-style-module": "^6.0.0",
     "prettier": "^2.7.1",
     "prettier-plugin-import-sort": "^0.0.7",
-    "typescript": "^4.8.2"
+    "typescript": "^4.8.2",
+    "unstated-next": "*"
   },
   "files": [
     "dist/",

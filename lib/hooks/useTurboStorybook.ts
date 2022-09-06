@@ -4,9 +4,9 @@ import { LogBox, NativeModules } from 'react-native'
 import { TStory, TStorybookProps, TSubStory } from '../types'
 import { definePattern } from '../utils'
 
-interface TUseTurboStorybookResult {
+export interface TUseTurboStorybookResult {
   pages: Array<{ story: TStory, substory: TSubStory }>
-  doSnapshot: () => Promise<void>
+  doSnapshot: () => void
 }
 export function useTurboStorybook (props?: TStorybookProps & { Stories: TStory[] }): TUseTurboStorybookResult {
   const { storybookPage, snapPort, Stories } = props ?? { snapPort: '8082' }
@@ -72,73 +72,76 @@ export function useTurboStorybook (props?: TStorybookProps & { Stories: TStory[]
     }
   }, [])
 
-  const doSnapshot = useCallback(async () => {
-    try {
-      const page = pages[pageNumber]
-      if (page === undefined || snapPort === undefined) {
-        return
-      }
-      await new Promise((resolve) => setTimeout(resolve, 100))
-      const { story, substory } = page
-      const nextPageName = `${story.name}_${substory.name}`
+  const doSnapshot = useCallback(() => {
+    const doIt = async (): Promise<void> => {
+      try {
+        const page = pages[pageNumber]
+        if (page === undefined || snapPort === undefined) {
+          return
+        }
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        const { story, substory } = page
+        const nextPageName = `${story.name}_${substory.name}`
 
-      const nextPage = pageNumber + 1
-      let tries = 1
-      while (true) {
-        const result = await fetch(`http://localhost:${snapPort}`, {
-          method: 'POST',
-          body: JSON.stringify({
-            command: 'snapshot',
-            headers: {
-              'Content-Type': 'application/json'
+        const nextPage = pageNumber + 1
+        let tries = 1
+        while (true) {
+          const result = await fetch(`http://localhost:${snapPort}`, {
+            method: 'POST',
+            body: JSON.stringify({
+              command: 'snapshot',
+              headers: {
+                'Content-Type': 'application/json'
               // 'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            screenName: nextPageName
+              },
+              screenName: nextPageName
+            })
           })
-        })
-        const json = await result.json()
-        if ((json.success === true) || tries > 5) {
+          const json = await result.json()
+          if ((json.success === true) || tries > 5) {
+            await fetch(`http://localhost:${snapPort}`, {
+              method: 'POST',
+              body: JSON.stringify({
+                command: 'testResult',
+                headers: {
+                  'Content-Type': 'application/json'
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                pass: json.success
+              })
+            })
+
+            break
+          }
+          console.log(`Retrying diff after ${tries * 100} ms...`)
+          await new Promise((resolve) => setTimeout(resolve, tries * 100))
+          tries = tries + 1
+        }
+
+        if (nextPage >= pages.length) {
           await fetch(`http://localhost:${snapPort}`, {
             method: 'POST',
             body: JSON.stringify({
-              command: 'testResult',
+              command: 'quit',
               headers: {
                 'Content-Type': 'application/json'
-                // 'Content-Type': 'application/x-www-form-urlencoded',
+              // 'Content-Type': 'application/x-www-form-urlencoded',
               },
-              pass: json.success
+              args: ['simctl', 'io', 'iPhone 13', 'screenshot', `screen_${pageNumber}.png`]
             })
           })
-
-          break
+        } else {
+          setPageNumber(pageNumber + 1)
         }
-        console.log(`Retrying diff after ${tries * 100} ms...`)
-        await new Promise((resolve) => setTimeout(resolve, tries * 100))
-        tries = tries + 1
-      }
-
-      if (nextPage >= pages.length) {
-        await fetch(`http://localhost:${snapPort}`, {
-          method: 'POST',
-          body: JSON.stringify({
-            command: 'quit',
-            headers: {
-              'Content-Type': 'application/json'
-              // 'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            args: ['simctl', 'io', 'iPhone 13', 'screenshot', `screen_${pageNumber}.png`]
-          })
-        })
-      } else {
-        setPageNumber(pageNumber + 1)
-      }
-    } catch (e) {
-      if (typeof e === 'object' && e !== null && e instanceof Error) {
-        console.warn('Failed to do snapshot because', e.message)
-      } else {
-        console.warn('FAILED: UNKNOWN REASON')
+      } catch (e) {
+        if (typeof e === 'object' && e !== null && e instanceof Error) {
+          console.warn('Failed to do snapshot because', e.message)
+        } else {
+          console.warn('FAILED: UNKNOWN REASON')
+        }
       }
     }
+    doIt().catch(e => console.warn('Error running snapshots'))
   }, [pageNumber, pages])
 
   return {
