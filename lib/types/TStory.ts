@@ -4,6 +4,7 @@
 //
 //  Created by Modern Logic on 2022-09-06
 //  Copyright © 2022 Modern Logic, LLC. All Rights Reserved.
+
 import type { StackNavigationOptions } from '@react-navigation/stack'
 
 export interface TSubStory {
