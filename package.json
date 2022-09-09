@@ -81,8 +81,9 @@
     "lint": "eslint",
     "prettier:apply": "prettier --write 'lib/**/*.{js,ts,tsx}'",
     "prettier:check": "prettier --check 'lib/**/*.{js,ts,tsx}'",
-    "release": "release-it"
+    "release": "release-it",
+    "tar": "yarn build && mkdir -p package && cp -r dist package && cp package.json package && cp README.md package && tar -cf package.tar package && rm -rf package"
   },
   "types": "./dist/index.d.ts",
-  "version": "0.0.2"
+  "version": "0.0.3"
 }

@@ -205,7 +205,9 @@ export const runHandler = async (args: CliRunOptions): Promise<void> => {
           if (typeof address === 'string' || address === null) {
             console.log('Listening on address: ', address)
           } else {
-            xcrun(['simctl', 'launch', config.ios.simulator, 'org.understood.community'], {
+            const RCT_METRO_PORT = process.env.RCT_METRO_PORT
+            const additionalArgs: string[] = RCT_METRO_PORT !== undefined ? ['-RCT_jsLocation', `localhost:${RCT_METRO_PORT}`] : []
+            xcrun(['simctl', 'launch', config.ios.simulator, 'org.understood.community', ...additionalArgs], {
               SIMCTL_CHILD_storybookPage: limit === undefined ? 'turbo' : `turbo:${limit}`,
               SIMCTL_CHILD_snapPort: `${address.port}`
             }).then(() => {

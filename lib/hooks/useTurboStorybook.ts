@@ -12,7 +12,9 @@ export function useTurboStorybook (props?: TStorybookProps & { Stories: TStory[]
   const { storybookPage, snapPort, Stories } = props ?? { snapPort: '8082' }
   LogBox.ignoreAllLogs()
   const DevSettings = NativeModules.DevSettings
-  DevSettings.setHotLoadingEnabled(false)
+  if (DevSettings?.setHotLoadingEnabled !== undefined) {
+    DevSettings.setHotLoadingEnabled(false)
+  }
   const { pattern, continueForward } = definePattern(storybookPage)
 
   const pages = useMemo((): Array<{ story: TStory, substory: TSubStory }> => {
