@@ -184,10 +184,10 @@ export const runHandler = async (args: CliRunOptions): Promise<void> => {
         }
         setTimeout(() => {
           if (!connected) {
-            console.warn('Simulator has not connected after 10 seconds')
+            console.warn('Simulator has not connected after 30 seconds')
             done()
           }
-        }, 10000)
+        }, 30000)
         const srv = Http.createServer(function (req, res) {
           let content = ''
           req.on('data', (chunk: string) => (content = content + chunk))
