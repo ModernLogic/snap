@@ -116,7 +116,8 @@ export function useTurboStorybook (props?: TStorybookProps & { Stories: TStory[]
             break
           }
           console.log(`Retrying diff after ${tries * 100} ms...`)
-          await new Promise((resolve) => setTimeout(resolve, tries * 100))
+          const time = tries * 100
+          await new Promise((resolve) => setTimeout(resolve, time))
           tries = tries + 1
         }
 

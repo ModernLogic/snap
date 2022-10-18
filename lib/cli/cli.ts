@@ -207,7 +207,7 @@ export const runHandler = async (args: CliRunOptions): Promise<void> => {
           } else {
             const RCT_METRO_PORT = process.env.RCT_METRO_PORT
             const additionalArgs: string[] = RCT_METRO_PORT !== undefined ? ['-RCT_jsLocation', `localhost:${RCT_METRO_PORT}`] : []
-            xcrun(['simctl', 'launch', config.ios.simulator, 'org.understood.community', ...additionalArgs], {
+            xcrun(['simctl', 'launch', config.ios.simulator, config.ios.bundleIdentifier, ...additionalArgs], {
               SIMCTL_CHILD_storybookPage: limit === undefined ? 'turbo' : `turbo:${limit}`,
               SIMCTL_CHILD_snapPort: `${address.port}`
             }).then(() => {

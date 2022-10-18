@@ -47,7 +47,7 @@
   "license": "UNLICENSED",
   "main": "./dist/index.js",
   "name": "@modernlogic/snap",
-  "packageManager": "yarn@3.2.1",
+  "packageManager": "yarn@3.2.4",
   "peerDependencies": {
     "@react-navigation/native": "*",
     "@react-navigation/stack": "*",
