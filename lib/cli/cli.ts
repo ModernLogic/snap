@@ -37,15 +37,14 @@ async function readConfig (configPath?: string): Promise<Config> {
 }
 
 export const runHandler = async (args: CliRunOptions): Promise<void> => {
-  // const findUp = await import('find-up')
-
-  const configPath = '.snaprc.json' // await findUp.findUp(['.snaprc', '.snaprc.json'])
+  const configPath = '.snaprc.json'
   const config = await readConfig(configPath)
   const limit = args.limit
 
   const update = args.update
   const snapshots = '.snap/snapshots'
-  const latestSnapshots = '.snap/snapshots/latest'
+  const latestSnapshots = '.snap/snapshots/latest/ios'
+
   const testResults = {
     fail: 0,
     success: 0,
@@ -82,6 +81,13 @@ export const runHandler = async (args: CliRunOptions): Promise<void> => {
           const result = await diffImages(snapshots, filename, update)
           if (result.pass) {
             await fs.unlink(filename)
+            // In case a diff was saved from earlier try but after waiting a few
+            // more ms it passes.
+            try {
+              await fs.unlink(result.diffPath)
+            } catch (e) {
+              // Dont care
+            }
           } else {
             // this is purported to make the on-screen home button look normal but does not seem to work
             // await xcrun(['simctl', 'ui', config.ios.simulator, 'appearance', 'dark'])
@@ -152,7 +158,8 @@ export const runHandler = async (args: CliRunOptions): Promise<void> => {
       res.end('Error handling request')
     })
   }
-
+  await fs.rm(`${snapshots}/latest`, { recursive: true, force: true })
+  await fs.rm(`${snapshots}/diff`, { recursive: true, force: true })
   fs.mkdir(latestSnapshots, { recursive: true })
     .catch(() => 0)
     .then(async () => {
