@@ -1,6 +1,6 @@
 import { CommonActions, useNavigation } from '@react-navigation/native'
 import { useCallback, useMemo, useState } from 'react'
-import { LogBox, NativeModules } from 'react-native'
+import { LogBox } from 'react-native'
 import { TStory, TStorybookProps, TSubStory } from '../types'
 import { definePattern } from '../utils'
 
@@ -11,10 +11,6 @@ export interface TUseTurboStorybookResult {
 export function useTurboStorybook (props?: TStorybookProps & { Stories: TStory[] }): TUseTurboStorybookResult {
   const { storybookPage, snapPort, Stories } = props ?? { snapPort: '8082' }
   LogBox.ignoreAllLogs()
-  const DevSettings = NativeModules.DevSettings
-  if (DevSettings?.setHotLoadingEnabled !== undefined) {
-    DevSettings.setHotLoadingEnabled(false)
-  }
   const { pattern, continueForward } = definePattern(storybookPage)
 
   const pages = useMemo((): Array<{ story: TStory, substory: TSubStory }> => {
