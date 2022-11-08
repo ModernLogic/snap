@@ -31,12 +31,14 @@ export interface TDiffResults {
   message: string
   pass: boolean
   diffPixelsCount: number
+  diffPath: string
 }
 export const diffImages = async (screenshotsDir: string, latestFilePath: string, update: boolean = false): Promise<TDiffResults> => {
   const platform = 'ios' as const
+  const filename = path.basename(latestFilePath)
+  const { filePath: diffPath, dirPath: diffDir } = imagePath(screenshotsDir, platform, 'diff', filename)
 
   try {
-    const filename = path.basename(latestFilePath)
     const { filePath: baselinePath, dirPath: baselineDir } = imagePath(screenshotsDir, platform, 'reference', filename)
     await fs.mkdir(baselineDir, { recursive: true })
 
@@ -46,11 +48,11 @@ export const diffImages = async (screenshotsDir: string, latestFilePath: string,
       return {
         message: 'Updated baseline',
         pass: true,
-        diffPixelsCount: 0
+        diffPixelsCount: 0,
+        diffPath
       }
     }
 
-    const { filePath: diffPath, dirPath: diffDir } = imagePath(screenshotsDir, platform, 'diff', filename)
     await fs.mkdir(diffDir, { recursive: true })
 
     const baselineData = await fs.readFile(baselinePath)
@@ -97,7 +99,8 @@ export const diffImages = async (screenshotsDir: string, latestFilePath: string,
       return {
         message: 'Compared screenshot to match baseline. No differences were found.',
         pass: true,
-        diffPixelsCount
+        diffPixelsCount,
+        diffPath
       }
     }
 
@@ -108,7 +111,8 @@ export const diffImages = async (screenshotsDir: string, latestFilePath: string,
     return {
       message: `Compared screenshot to match baseline. ${diffPixelsCount} were different.`,
       pass: diffPixelsCount === 0,
-      diffPixelsCount
+      diffPixelsCount,
+      diffPath
     }
   } catch (error) {
     let message = 'Unknown error'
@@ -120,7 +124,8 @@ export const diffImages = async (screenshotsDir: string, latestFilePath: string,
     return {
       message: `Screenshot diffing error - ${message}`,
       pass: false,
-      diffPixelsCount: -1
+      diffPixelsCount: -1,
+      diffPath
     }
   }
 }
