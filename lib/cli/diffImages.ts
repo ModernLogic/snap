@@ -19,7 +19,7 @@ export interface TImageInfo {
 export function imagePath (
   screenshotsDir: string,
   platform: 'ios' | 'android',
-  mode: 'diff' | 'reference' | 'latest' | 'andy' | 'andy2',
+  mode: 'diff' | 'reference' | 'latest',
   filename: string
 ): TImageInfo {
   const dirPath = path.join(screenshotsDir, mode, platform)
