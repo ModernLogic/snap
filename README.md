@@ -6,7 +6,7 @@ https://github.com/ModernLogic/snap
 
 move runsnaps.sh  into the script.
 
-##In Xcode
+## In Xcode
 
 Copy logic in `AppDelegate` around snapPort
 
@@ -17,7 +17,7 @@ if (snapPortC) {
 }
 ```
 
-##In React Native App
+## In React Native App
 
 Create `scripts/run-snaps.sh` file in the root directory.
 
@@ -136,7 +136,7 @@ Modify `.gitattributes` to ensure new files added in `.snap` are added via `lfs`
 .snap/snapshots/reference/ios/* filter=lfs diff=lfs merge=lfs -text
 ```
 
-##Generating snaps
+## Generating snaps
 
 Run
 
@@ -146,7 +146,7 @@ yarn snap test -u
 This should write results in to `.snap/` directory
 
 
-##Running tests
+## Running tests
 
 To test
 
@@ -173,7 +173,7 @@ Copy CI script, especially the test area
           if-no-files-found: ignore
 ```
 
-##Debugging
+## Debugging
 
 For debugging from xcode, if necessary
 
