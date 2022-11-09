@@ -4,7 +4,7 @@ A simple cli that facilitates rapid snapshot testing
 
 https://github.com/ModernLogic/snap
 
-move runsnaps.sh  into the script.
+move runsnaps.sh into the script.
 
 ## In Xcode
 
@@ -84,6 +84,7 @@ exit $RESULT
 ```
 
 Create `.snaprc.json` file in the root directory changing the `bundleIdentifier` value
+
 ```javascript
 {
     "ios": {
@@ -105,6 +106,7 @@ yarn install
 ```
 
 Add in the `.gitignore` file
+
 ```javascript
 .snap/snapshots/diff
 .snap/snapshots/latest
@@ -136,6 +138,27 @@ Modify `.gitattributes` to ensure new files added in `.snap` are added via `lfs`
 .snap/snapshots/reference/ios/* filter=lfs diff=lfs merge=lfs -text
 ```
 
+Modify `metro.config.js` either like this
+
+```javascript
+  resolver.blockList = [
+    ...(Array.isArray(resolver.blockList) ? resolver.blockList : resolver.blockList ? [resolver.blockList] : []),
+    /^[.]snap[/]/,
+  ];
+```
+
+or like this:
+
+```javascript
+module.exports = {
+  resolver: {
+    ...defaultResolver,
+    ...,
+    blockList: [/^[.]snap[/]/],
+  }
+}
+```
+
 ## Generating snaps
 
 Run
@@ -143,8 +166,8 @@ Run
 ```sh
 yarn snap test -u
 ```
-This should write results in to `.snap/` directory
 
+This should write results in to `.snap/` directory
 
 ## Running tests
 
@@ -157,6 +180,7 @@ yarn snap test
 This should run against existing match files
 
 Copy CI script, especially the test area
+
 ```javascript
       - name: run tests
         run: |
@@ -183,3 +207,16 @@ To test: add these to the Scheme Environment Variables
 snapPort=8881
 storybookPage=turbo
 ```
+
+# Developing
+
+Here's Andy's quick and dirty guide to developing snap.
+
+- Code up some new changes in this repo
+- run `yarn tar` to generate a temporary .tgz file called `package.tgz` in this directory
+- Clear the yarn cache `rm ~/.yarn/berry/cache/@modernlogic-*`
+- From the iOS app directory:
+  - Copy the package.tgz into your project, e.g. `cp ../@modernlogic/snap/package.tgz ./vendor/@modernlogic/snap_0.0.9.tgz`
+  - remove, and then reinstall the package: `yarn remove @modernlogic/snap` and then `yarn add ./vendor/@modernlogic/snap_0.0.9.tgz`
+- now you can run `yarn snap test` or other commands and see if it works better with your new changes.
+- Be sure to delete package.tgz -- it doesn't need to be added to source control.
