@@ -8,6 +8,8 @@
 
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
+import { runCiTest } from './ci'
+import { exit } from 'process'
 
 import { runHandler } from './cli'
 
@@ -22,12 +24,19 @@ const configOption: yargs.Options = {
   alias: 'c',
   describe: 'Configuration file to be used',
   type: 'string',
-  default: './owl.config.json'
+  default: '.snaprc.json'
 }
 
 const updateOption: yargs.Options = {
   alias: 'u',
   describe: 'Update the baseline screenshots',
+  type: 'boolean',
+  default: false
+}
+
+const skipInstallOption: yargs.Options = {
+  alias: 's',
+  describe: 'Skip uninstall and reinstall of app',
   type: 'boolean',
   default: false
 }
@@ -46,12 +55,30 @@ const builderOptionsTest = {
   limit: limitOption
 }
 
+const builderOptionsCITest = {
+  config: configOption,
+  platform: plaformOption,
+  skipInstall: skipInstallOption
+}
+
 void yargs(hideBin(process.argv))
   .command({
     command: 'test',
     describe: 'Runs the test suite',
     builder: builderOptionsTest,
-    handler: async (args: any) => await runHandler(args)
+    handler: async (args: any) => {
+      const exitCode = await runHandler(args)
+      exit(exitCode)
+    }
+  })
+  .command({
+    command: 'citest',
+    describe: 'Runs the test suite as CI would, including restarting the simulator, installing the built app',
+    builder: builderOptionsCITest,
+    handler: async (args: any) => {
+      const exitCode = await runCiTest(args)
+      exit(exitCode)
+    }
   })
   .help('help')
   .alias('h', 'help')

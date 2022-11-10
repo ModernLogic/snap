@@ -7,10 +7,10 @@
 
 import fs from 'fs/promises'
 import * as Http from 'http'
-import { exit } from 'process'
 import { TCommand } from '../types/TCommands'
 
 import { diffImages } from './diffImages'
+import { readConfig } from './readConfig'
 import { xcrun } from './xcrun'
 
 export interface CliRunOptions {
@@ -18,32 +18,21 @@ export interface CliRunOptions {
   config: string
   update: boolean
   limit?: string
+  port?: string
 }
 
-export interface Config {
-  ios: {
-    bundleIdentifier: string
-    simulator: string
-  }
-}
-
-async function readConfig (configPath?: string): Promise<Config> {
-  if (configPath === undefined) {
-    throw new Error('Cannot find .snaprc.json file')
-  }
-  const contents = await fs.readFile(configPath, { encoding: 'utf-8' })
-  const parsed = JSON.parse(contents)
-  return parsed
-}
-
-export const runHandler = async (args: CliRunOptions): Promise<void> => {
-  const configPath = '.snaprc.json'
-  const config = await readConfig(configPath)
+export const runHandler = async (args: CliRunOptions): Promise<number> => {
+  const config = await readConfig(args.config)
+  const platform = args.platform
   const limit = args.limit
+  const RCT_METRO_PORT = process.env.RCT_METRO_PORT ?? args.port
 
+  if (platform !== 'ios') {
+    throw new Error('Error: support for Android not implemented')
+  }
   const update = args.update
   const snapshots = '.snap/snapshots'
-  const latestSnapshots = '.snap/snapshots/latest/ios'
+  const latestSnapshots = `.snap/snapshots/latest/${platform}`
 
   const testResults = {
     fail: 0,
@@ -160,7 +149,7 @@ export const runHandler = async (args: CliRunOptions): Promise<void> => {
   }
   await fs.rm(`${snapshots}/latest`, { recursive: true, force: true })
   await fs.rm(`${snapshots}/diff`, { recursive: true, force: true })
-  fs.mkdir(latestSnapshots, { recursive: true })
+  return await fs.mkdir(latestSnapshots, { recursive: true })
     .catch(() => 0)
     .then(async () => {
       await xcrun(['simctl', 'terminate', config.ios.simulator, config.ios.bundleIdentifier], {
@@ -178,16 +167,15 @@ export const runHandler = async (args: CliRunOptions): Promise<void> => {
         )
     )
     .then(async () => {
-      return await new Promise((resolve) => {
+      return await new Promise<number>((resolve) => {
         let connected = false
         const done = (): void => {
-          resolve('Done')
           console.log(JSON.stringify(testResults))
           srv.close()
           if (testResults.fail === 0) {
-            exit(0)
+            resolve(0)
           }
-          exit(1)
+          resolve(1)
         }
         setTimeout(() => {
           if (!connected) {
@@ -212,7 +200,6 @@ export const runHandler = async (args: CliRunOptions): Promise<void> => {
           if (typeof address === 'string' || address === null) {
             console.log('Listening on address: ', address)
           } else {
-            const RCT_METRO_PORT = process.env.RCT_METRO_PORT
             const additionalArgs: string[] = RCT_METRO_PORT !== undefined ? ['-RCT_jsLocation', `localhost:${RCT_METRO_PORT}`] : []
             xcrun(['simctl', 'launch', config.ios.simulator, config.ios.bundleIdentifier, ...additionalArgs], {
               SIMCTL_CHILD_storybookPage: limit === undefined ? 'turbo' : `turbo:${limit}`,
@@ -227,5 +214,8 @@ export const runHandler = async (args: CliRunOptions): Promise<void> => {
         })
       })
     })
-    .catch((reason) => console.warn('FAILED', reason))
+    .catch((reason) => {
+      console.warn('FAILED', reason)
+      return -1
+    })
 }
