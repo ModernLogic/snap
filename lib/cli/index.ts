@@ -58,7 +58,8 @@ const builderOptionsTest = {
 const builderOptionsCITest = {
   config: configOption,
   platform: plaformOption,
-  skipInstall: skipInstallOption
+  skipInstall: skipInstallOption,
+  limit: limitOption
 }
 
 void yargs(hideBin(process.argv))

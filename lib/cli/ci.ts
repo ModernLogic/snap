@@ -11,6 +11,7 @@ import { xcrun } from './xcrun'
 import net from 'net'
 import process from 'node:process'
 import { spawn } from 'node:child_process'
+import { ChildProcessWithoutNullStreams } from 'child_process'
 
 async function findAvailablePort (): Promise<number> {
   return await new Promise((resolve, reject) => {
@@ -35,6 +36,7 @@ async function findAvailablePort (): Promise<number> {
 export interface CliRunOptions {
   platform: 'ios' | 'android'
   config: string
+  limit?: string
   skipInstall: boolean
 }
 
@@ -98,15 +100,17 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
 
   const port = await findAvailablePort()
 
-  const yarnProc = spawn('yarn', ['start', '--port', `${port}`])
+  const yarnProc = spawn('yarn', ['start', '--port', `${port}`], { detached: true })
 
   yarnProc.stdout.on('data', (data) => console.log('metro: ', bufferToString(data)))
   yarnProc.stderr.on('data', (data) => console.log('METRO: ', bufferToString(data)))
   const yarnExited = new Promise<number | null>((resolve) => {
     yarnProc.on('close', (code) => {
+      console.log('metro close', code)
       resolve(code)
     })
     yarnProc.on('exit', (code) => {
+      console.log('metro exit', code)
       resolve(code)
     })
     yarnProc.on('disconnect', () => {
@@ -118,12 +122,13 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
   })
   let killed = false
   process.on('SIGINT', () => {
+    console.log('SIGINT!')
     if (killed) {
       process.exit()
       return
     }
     killed = true
-    yarnProc.kill()
+    killProcGroup(yarnProc)
     console.log('Press Control-C again to exit')
   })
 
@@ -133,7 +138,7 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
 
   console.log(`Done testing exitCode:${exitCode}. Terminating metro...`)
 
-  yarnProc.kill()
+  killProcGroup(yarnProc)
   console.log('...kill message sent.  Awaiting exit...')
 
   const code = await (yarnExited)
@@ -151,4 +156,12 @@ const bufferToString = (data: any): string => {
     return data.toString('utf8')
   }
   return 'NOSTR'
+}
+
+function killProcGroup (process: ChildProcessWithoutNullStreams): void {
+  if (process.pid != null) {
+    process.kill(-process.pid)
+  } else {
+    process.kill()
+  }
 }
