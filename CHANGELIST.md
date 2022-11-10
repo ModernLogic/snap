@@ -1,3 +1,13 @@
+# v0.0.10
+
+Introducing new command
+
+```
+yarn citest
+```
+
+Now github actions can run snap tests with all the extra steps (installing in simulator, relaunching simulator, etc...) without a helper script.
+
 # v0.0.8
 
 Running `snap` no longer turns of 'hot-reload'. However, it is now required that react-native apps add
