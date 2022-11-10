@@ -85,5 +85,5 @@
     "tar": "yarn build && mkdir -p package && cp -r dist package && cp package.json package && cp README.md package && tar -cf package.tar package && rm -rf package"
   },
   "types": "./dist/index.d.ts",
-  "version": "0.0.9"
+  "version": "0.0.10"
 }
