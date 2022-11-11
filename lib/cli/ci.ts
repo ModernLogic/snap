@@ -50,8 +50,8 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
 
   const {
     simulator: device,
-    bundleIdentifier: bundleId
-    // appName
+    bundleIdentifier: bundleId,
+    appName
   } = config.ios
 
   console.log('Terminating currently running process (if any)')
@@ -74,16 +74,28 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
   // fixme it'd be nice to know how long this really takes
   await sleep(3000)
 
+  // Ensure hardware keyboard is connected -- no way to do this ?!?
+  // In Xcode 12 this worked, but it doesn't any more :(
+  // take JSON output from this command
+  // plutil -convert json -o - ~/Library/Preferences/com.apple.iphonesimulator.plist
+  // and then update that plist while the simulator is shutdown
+  // plutil -replace DevicePreferences.${TARGET_DEVICE_IDENTIFIER}.ConnectHardwareKeyboard -bool NO ~/Library/Preferences/com.apple.iphonesimulator.plist
+
   console.log(`Booting ${device}`)
   await xcrun(['simctl', 'boot', device])
 
   // wait for simulator to boot
   await sleep(6000)
 
+  // Ensure in light mode, not dark mode
+  await xcrun(['simctl', 'ui', 'booted', 'appearance', 'light'])
+  await xcrun(['simctl', 'status_bar', device, 'override', '--time', 'SNAP', '--dataNetwork', 'lte', '--wifiMode', 'active', '--wifiBars', '3', '--cellularBars', '4', '--cellularMode', 'active', '--batteryState', 'charged', '--batteryLevel', '75'])
+  await sleep(200)
+
   if (!skipInstall) {
     console.log('Uninstall app...')
     try {
-      await xcrun(['simctl', 'uninstall', device, '$BUNDLE_ID'])
+      await xcrun(['simctl', 'uninstall', device, bundleId])
     } catch (e) {
       console.log('Could not uninstall')
     }
@@ -92,7 +104,11 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
     await sleep(6000)
 
     console.log('Installing app...')
-    await xcrun(['simctl', 'install', device, 'ios/output/Build/Products/Debug-iphonesimulator/$APP_NAME'])
+    try {
+      await xcrun(['simctl', 'install', device, `ios/output/Build/Products/Debug-iphonesimulator/${appName}`])
+    } catch (e) {
+      console.log('Could not install the app !?')
+    }
 
     // wait for app to install
     await sleep(3000)
@@ -106,11 +122,11 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
   yarnProc.stderr.on('data', (data) => console.log('METRO: ', bufferToString(data)))
   const yarnExited = new Promise<number | null>((resolve) => {
     yarnProc.on('close', (code) => {
-      console.log('metro close', code)
+      // console.log('metro close', code)
       resolve(code)
     })
     yarnProc.on('exit', (code) => {
-      console.log('metro exit', code)
+      // console.log('metro exit', code)
       resolve(code)
     })
     yarnProc.on('disconnect', () => {
@@ -120,16 +136,13 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
       console.log('METRO ERROR', code.message)
     })
   })
-  let killed = false
   process.on('SIGINT', () => {
     console.log('SIGINT!')
-    if (killed) {
-      process.exit()
-      return
+    const doIt = async (): Promise<void> => {
+      await cleanup(device, bundleId, yarnProc, yarnExited)
     }
-    killed = true
-    killProcGroup(yarnProc)
-    console.log('Press Control-C again to exit')
+    doIt().finally(() => process.exit()
+    )
   })
 
   await sleep(15000)
@@ -138,11 +151,7 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
 
   console.log(`Done testing exitCode:${exitCode}. Terminating metro...`)
 
-  killProcGroup(yarnProc)
-  console.log('...kill message sent.  Awaiting exit...')
-
-  const code = await (yarnExited)
-  console.log(`...Metro exited with code ${code ?? -1}`)
+  await cleanup(device, bundleId, yarnProc, yarnExited)
 
   return exitCode
 }
@@ -156,6 +165,24 @@ const bufferToString = (data: any): string => {
     return data.toString('utf8')
   }
   return 'NOSTR'
+}
+
+async function cleanup (device: string, bundleId: string, yarnProc: ChildProcessWithoutNullStreams, yarnExited: Promise<number | null>): Promise<void> {
+  killProcGroup(yarnProc)
+  // console.log('...kill message sent.  Awaiting exit...')
+
+  const code = await (yarnExited)
+  if (code !== null && code !== 0) {
+    console.log(`...Metro exited with code ${code ?? -1}`)
+  }
+
+  // console.log('Terminating app in simulator (if any)')
+  try {
+    await xcrun(['simctl', 'terminate', device, bundleId])
+  } catch (e) {
+    console.log("Cannot Terminating app: App wasn't running?")
+  }
+  await xcrun(['simctl', 'status_bar', device, 'clear'])
 }
 
 function killProcGroup (proc: ChildProcessWithoutNullStreams): void {
