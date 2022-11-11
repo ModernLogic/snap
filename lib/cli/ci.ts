@@ -158,10 +158,10 @@ const bufferToString = (data: any): string => {
   return 'NOSTR'
 }
 
-function killProcGroup (process: ChildProcessWithoutNullStreams): void {
-  if (process.pid != null) {
-    process.kill(-process.pid)
+function killProcGroup (proc: ChildProcessWithoutNullStreams): void {
+  if (proc.pid != null) {
+    process.kill(-proc.pid)
   } else {
-    process.kill()
+    proc.kill()
   }
 }
