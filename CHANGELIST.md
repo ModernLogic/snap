@@ -1,3 +1,13 @@
+# v0.0.12
+
+The simulator status bar is now set to an override so it always looks the same.
+
+Clean up now kills the app so that it's not left in a strange "zombie" state when you want to return to developing your app.
+
+# v0.0.11
+
+Kill off all of metro node child processes when exiting.
+
 # v0.0.10
 
 Introducing new command
