@@ -147,6 +147,10 @@ snapPort=8881
 storybookPage=turbo
 ```
 
+## Tips
+
+- If you have more than one simulator in Xcode with the same name as the simulator specified in your `.snaprc.json`, snap will only connect to the simulator with the most recent iOS version. For example, if you have two “iPhone 13”, one iOS 16.1 and one iOS 15.5, snap will only connect to iOS 16.1. Delete any simulators with a newer iOS version to fix this issue.
+
 # Developing
 
 Here's Andy's quick and dirty guide to developing snap.
