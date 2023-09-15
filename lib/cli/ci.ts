@@ -7,11 +7,15 @@
 
 import { runHandler } from './cli'
 import { readConfig } from './readConfig'
-import { xcrun } from './xcrun'
 import net from 'net'
 import process from 'node:process'
 import { spawn } from 'node:child_process'
 import { ChildProcessWithoutNullStreams } from 'child_process'
+import { sleep } from './sleep'
+import { IOSPlatformAbstraction } from './pal/ios/IOSPlatformAbstraction'
+import { CliRunOptions } from './CliRunOptions'
+import { AndroidPlatformAbstraction } from './pal/android/AndroidPlatformAbstraction'
+import { PlatformAbstractionLayer } from './pal/PlatformAbstractionLayer'
 
 async function findAvailablePort (): Promise<number> {
   return await new Promise((resolve, reject) => {
@@ -33,39 +37,29 @@ async function findAvailablePort (): Promise<number> {
   })
 }
 
-export interface CliRunOptions {
-  platform: 'ios' | 'android'
-  config: string
-  limit?: string
-  skipInstall: boolean
-}
-
 export const runCiTest = async (args: CliRunOptions): Promise<number> => {
   const config = await readConfig(args.config)
   const platform = args.platform
-  const skipInstall = args.skipInstall
-  if (platform !== 'ios') {
-    throw new Error('Error: support for Android not implemented')
-  }
+  const skipInstall = args.skipInstall ?? false
+  const pal: PlatformAbstractionLayer = platform === 'ios' ? new IOSPlatformAbstraction(args, config) : new AndroidPlatformAbstraction(args, config)
 
-  const {
-    simulator: device,
-    bundleIdentifier: bundleId,
-    appName
-  } = config.ios
+  // const {
+  //   simulator: device,
+  //   bundleIdentifier: bundleId,
+  // } = config.ios
 
   console.log('Terminating currently running process (if any)')
   try {
-    await xcrun(['simctl', 'terminate', device, bundleId])
+    await pal.terminate()
   } catch (e) {
     console.log("App wasn't running")
   }
 
   await sleep(3000)
 
-  console.log(`Shutting down simulator '${device}' (if booted)`)
+  console.log('Shutting down simulator (if booted)')
   try {
-    await xcrun(['simctl', 'shutdown', device])
+    await pal.shutdown()
   } catch (e) {
     console.log("Device wasn't booted")
   }
@@ -81,37 +75,15 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
   // and then update that plist while the simulator is shutdown
   // plutil -replace DevicePreferences.${TARGET_DEVICE_IDENTIFIER}.ConnectHardwareKeyboard -bool NO ~/Library/Preferences/com.apple.iphonesimulator.plist
 
-  console.log(`Booting ${device}`)
-  await xcrun(['simctl', 'boot', device])
-
-  // wait for simulator to boot
-  await sleep(6000)
-
-  // Ensure in light mode, not dark mode
-  await xcrun(['simctl', 'ui', 'booted', 'appearance', 'light'])
-  await xcrun(['simctl', 'status_bar', device, 'override', '--time', 'SNAP', '--dataNetwork', 'lte', '--wifiMode', 'active', '--wifiBars', '3', '--cellularBars', '4', '--cellularMode', 'active', '--batteryState', 'charged', '--batteryLevel', '75'])
-  await sleep(200)
+  console.log('Booting emulator/simulator')
+  await pal.boot()
 
   if (!skipInstall) {
     console.log('Uninstall app...')
-    try {
-      await xcrun(['simctl', 'uninstall', device, bundleId])
-    } catch (e) {
-      console.log('Could not uninstall')
-    }
-
-    // wait for simulator to uninstall app
-    await sleep(6000)
+    await pal.uninstall()
 
     console.log('Installing app...')
-    try {
-      await xcrun(['simctl', 'install', device, `ios/output/Build/Products/Debug-iphonesimulator/${appName}`])
-    } catch (e) {
-      console.log('Could not install the app !?')
-    }
-
-    // wait for app to install
-    await sleep(3000)
+    await pal.install()
   }
 
   const port = await findAvailablePort()
@@ -154,11 +126,10 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
 
   await cleanupMetroProcess(yarnProc, yarnExited)
 
-  return exitCode
-}
+  await pal.cleanup()
+  await pal.shutdown()
 
-async function sleep (milliseconds: number): Promise<void> {
-  return await new Promise((resolve) => setTimeout(resolve, milliseconds))
+  return exitCode
 }
 
 const bufferToString = (data: any): string => {
@@ -176,14 +147,6 @@ async function cleanupMetroProcess (yarnProc: ChildProcessWithoutNullStreams, ya
   if (code !== null && code !== 0) {
     console.log(`...Metro exited with code ${code ?? -1}`)
   }
-
-  // console.log('Terminating app in simulator (if any)')
-  try {
-    await xcrun(['simctl', 'terminate', device, bundleId])
-  } catch (e) {
-    console.log("Cannot Terminating app: App wasn't running?")
-  }
-  await xcrun(['simctl', 'status_bar', device, 'clear'])
 }
 
 function killProcGroup (proc: ChildProcessWithoutNullStreams): void {

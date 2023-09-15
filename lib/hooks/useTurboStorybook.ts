@@ -1,5 +1,6 @@
 import { CommonActions, useNavigation } from '@react-navigation/native'
 import { useCallback, useMemo, useState } from 'react'
+
 import { LogBox } from 'react-native'
 import { TStory, TStorybookProps, TSubStory } from '../types'
 import { definePattern } from '../utils'
@@ -12,6 +13,7 @@ export function useTurboStorybook (props?: TStorybookProps & { Stories: TStory[]
   const { storybookPage, snapPort, Stories } = props ?? { snapPort: '8082' }
   LogBox.ignoreAllLogs()
   const { pattern, continueForward } = definePattern(storybookPage)
+  let isTakingSnapshot = false
 
   const pages = useMemo((): Array<{ story: TStory, substory: TSubStory }> => {
     const flattened = (Stories ?? [])
@@ -71,7 +73,11 @@ export function useTurboStorybook (props?: TStorybookProps & { Stories: TStory[]
   }, [])
 
   const doSnapshot = useCallback(() => {
-    const doIt = async (): Promise<void> => {
+    const doIt = async (): Promise<undefined | 'locked'> => {
+      if (isTakingSnapshot) {
+        return 'locked'
+      }
+      isTakingSnapshot = true
       try {
         const page = pages[pageNumber]
         if (page === undefined || snapPort === undefined) {
@@ -126,7 +132,7 @@ export function useTurboStorybook (props?: TStorybookProps & { Stories: TStory[]
                 'Content-Type': 'application/json'
               // 'Content-Type': 'application/x-www-form-urlencoded',
               },
-              args: ['simctl', 'io', 'iPhone 13', 'screenshot', `screen_${pageNumber}.png`]
+              args: []
             })
           })
         } else {
@@ -140,7 +146,14 @@ export function useTurboStorybook (props?: TStorybookProps & { Stories: TStory[]
         }
       }
     }
-    doIt().catch(e => console.warn('Error running snapshots'))
+    doIt()
+      .catch(e => { console.warn('Error running snapshots') })
+      .then((result) => {
+        if (result !== 'locked') {
+          isTakingSnapshot = false
+        }
+      })
+      .catch((e) => console.error('THIS IS IMPOSSIBLE'))
   }, [pageNumber, pages])
 
   return {
