@@ -116,6 +116,7 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
 
   const port = await findAvailablePort()
 
+  // FIXME what if the react-native app uses npm instead of yarn?
   const yarnProc = spawn('yarn', ['start', '--port', `${port}`], { detached: true })
 
   yarnProc.stdout.on('data', (data) => console.log('metro: ', bufferToString(data)))
@@ -139,7 +140,7 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
   process.on('SIGINT', () => {
     console.log('SIGINT!')
     const doIt = async (): Promise<void> => {
-      await cleanup(device, bundleId, yarnProc, yarnExited)
+      await cleanupMetroProcess(yarnProc, yarnExited)
     }
     doIt().finally(() => process.exit()
     )
@@ -151,7 +152,7 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
 
   console.log(`Done testing exitCode:${exitCode}. Terminating metro...`)
 
-  await cleanup(device, bundleId, yarnProc, yarnExited)
+  await cleanupMetroProcess(yarnProc, yarnExited)
 
   return exitCode
 }
@@ -167,7 +168,7 @@ const bufferToString = (data: any): string => {
   return 'NOSTR'
 }
 
-async function cleanup (device: string, bundleId: string, yarnProc: ChildProcessWithoutNullStreams, yarnExited: Promise<number | null>): Promise<void> {
+async function cleanupMetroProcess (yarnProc: ChildProcessWithoutNullStreams, yarnExited: Promise<number | null>): Promise<void> {
   killProcGroup(yarnProc)
   // console.log('...kill message sent.  Awaiting exit...')
 
