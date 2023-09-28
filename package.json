@@ -84,6 +84,7 @@
     "tsc": "tsc --noEmit",
     "ci:lint": "eslint lib --max-warnings 0 --ext .ts,.tsx",
     "incrementVersion": "node ./scripts/incrementVersion.js",
+    "dev:try": "function trydev { VERSION=`jq .version -r < package.json`; SRC=`pwd`; test -f $1/package.json || return -1; npm run tar && rm ~/.yarn/berry/cache/@modernlogic-* && (cd $1; rm ..vendor/@modernlogic/snap*; cp $SRC/package.tgz ./vendor/@modernlogic/snap_$VERSION.tgz; yarn remove @modernlogic/snap; yarn add ./vendor/@modernlogic/snap_$VERSION.tgz) } && trydev",
     "release": "release-it",
     "tar": "npm run build && mkdir -p package && cp -r dist package && cp package.json package && cp README.md package && tar -czf package.tgz package && rm -rf package"
   },

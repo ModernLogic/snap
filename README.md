@@ -163,3 +163,13 @@ Here's Andy's quick and dirty guide to developing snap.
   - remove, and then reinstall the package: `yarn remove @modernlogic/snap` and then `yarn add ./vendor/@modernlogic/snap_0.0.9.tgz`
 - now you can run `yarn snap test` or other commands and see if it works better with your new changes.
 - Be sure to delete package.tgz -- it doesn't need to be added to source control.
+
+_An alternate_
+
+You can also just do
+
+```
+npm run dev:try ../../understood
+```
+
+To do the same sequence of steps.
