@@ -1,8 +1,8 @@
 import { CommonActions, useNavigation } from '@react-navigation/native'
 import { useCallback, useMemo, useState } from 'react'
-
 import { LogBox } from 'react-native'
-import { TStory, TStorybookProps, TSubStory } from '../types'
+
+import type { TStory, TStorybookProps, TSubStory } from '../types'
 import { definePattern } from '../utils'
 
 export interface TUseTurboStorybookResult {
@@ -96,20 +96,20 @@ export function useTurboStorybook (props?: TStorybookProps & { Stories: TStory[]
               command: 'snapshot',
               headers: {
                 'Content-Type': 'application/json'
-              // 'Content-Type': 'application/x-www-form-urlencoded',
+                // 'Content-Type': 'application/x-www-form-urlencoded',
               },
               screenName: nextPageName
             })
           })
           const json = await result.json()
-          if ((json.success === true) || tries > 5) {
+          if (json.success === true || tries > 5) {
             await fetch(`http://localhost:${snapPort}`, {
               method: 'POST',
               body: JSON.stringify({
                 command: 'testResult',
                 headers: {
                   'Content-Type': 'application/json'
-                // 'Content-Type': 'application/x-www-form-urlencoded',
+                  // 'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 pass: json.success
               })
@@ -130,7 +130,7 @@ export function useTurboStorybook (props?: TStorybookProps & { Stories: TStory[]
               command: 'quit',
               headers: {
                 'Content-Type': 'application/json'
-              // 'Content-Type': 'application/x-www-form-urlencoded',
+                // 'Content-Type': 'application/x-www-form-urlencoded',
               },
               args: []
             })
@@ -147,13 +147,17 @@ export function useTurboStorybook (props?: TStorybookProps & { Stories: TStory[]
       }
     }
     doIt()
-      .catch(e => { console.warn('Error running snapshots') })
+      .catch((e) => {
+        console.warn('Error running snapshots')
+      })
       .then((result) => {
         if (result !== 'locked') {
           isTakingSnapshot = false
         }
       })
-      .catch((e) => console.error('THIS IS IMPOSSIBLE'))
+      .catch((e) => {
+        console.error('THIS IS IMPOSSIBLE')
+      })
   }, [pageNumber, pages])
 
   return {

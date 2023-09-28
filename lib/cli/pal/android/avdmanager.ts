@@ -7,7 +7,7 @@
 
 import { makeFork } from '../../fork'
 
-export function avdmanager (args: string[], env: Record<string, string> = {}): { result: Promise<string>, proc: any} {
+export function avdmanager (args: string[], env: Record<string, string> = {}): { result: Promise<string>, proc: any } {
   const ANDROID_SDK_ROOT = process.env.ANDROID_SDK_ROOT
   if (ANDROID_SDK_ROOT === undefined) {
     throw new Error('ANDROID_SDK_ROOT is not set')

@@ -1,4 +1,3 @@
-
 export interface CliRunOptions {
   platform: 'ios' | 'android'
   config: string

@@ -10,7 +10,7 @@ import { spawn } from 'node:child_process'
 interface ForkConfig {
   logMessages?: boolean
 }
-type ForkFunc = (args: string[], env: Record<string, string | undefined>) => { result: Promise<string>, proc: any}
+type ForkFunc = (args: string[], env: Record<string, string | undefined>) => { result: Promise<string>, proc: any }
 
 export const makeFork = (cmdlineExecutablePath: string, config: ForkConfig = {}): ForkFunc => {
   const id = cmdlineExecutablePath.split('/').pop() ?? 'UNKNOWN'
@@ -24,8 +24,7 @@ export const makeFork = (cmdlineExecutablePath: string, config: ForkConfig = {})
       const logBuffer: string[] = []
       const lastStream: string = ''
       function maybeLog (streamName: string, data: any): void {
-        if ((config?.logMessages ?? false)
-        ) {
+        if (config?.logMessages ?? false) {
           if (lastStream !== streamName) {
             process.stdout.write(`${id} ${streamName}: ${logBuffer.join('')}`)
             logBuffer.length = 0

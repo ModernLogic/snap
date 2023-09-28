@@ -8,8 +8,9 @@
 import { createStackNavigator } from '@react-navigation/stack'
 import React from 'react'
 import { StatusBar, StyleSheet, Text, View } from 'react-native'
+
 import { TurboStorybookContainer } from '../hooks'
-import { TSubStory } from '../types'
+import type { TSubStory } from '../types'
 import { StorybookScreen } from './StorybookScreen'
 
 export const Stack = createStackNavigator()
@@ -47,7 +48,8 @@ export const TurboStorybookInner: React.FC = () => {
     </View>
   )
   function getProps (substory: TSubStory, storyName: string): TSubStory['screenOptions'] {
-    const withTitle = ((substory.screenOptions?.options?.header) != null) ? {} : { headerTitle: `${storyName} ${substory.name}` }
+    const withTitle =
+      substory.screenOptions?.options?.header != null ? {} : { headerTitle: `${storyName} ${substory.name}` }
 
     return {
       ...substory.screenOptions,

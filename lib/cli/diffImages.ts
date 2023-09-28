@@ -10,7 +10,8 @@ import path from 'path'
 
 import pixelmatch from 'pixelmatch'
 import { PNG } from 'pngjs'
-import { PlatformAbstractionLayer } from './pal/PlatformAbstractionLayer'
+
+import type { PlatformAbstractionLayer } from './pal/PlatformAbstractionLayer'
 
 export interface TImageInfo {
   filePath: string
@@ -34,7 +35,12 @@ export interface TDiffResults {
   diffPixelsCount: number
   diffPath: string
 }
-export const diffImages = async (pal: PlatformAbstractionLayer, screenshotsDir: string, latestFilePath: string, update: boolean = false): Promise<TDiffResults> => {
+export const diffImages = async (
+  pal: PlatformAbstractionLayer,
+  screenshotsDir: string,
+  latestFilePath: string,
+  update: boolean = false
+): Promise<TDiffResults> => {
   const filename = path.basename(latestFilePath)
   const { filePath: diffPath, dirPath: diffDir } = imagePath(screenshotsDir, pal.name, 'diff', filename)
 
@@ -74,10 +80,10 @@ export const diffImages = async (pal: PlatformAbstractionLayer, screenshotsDir: 
 
     for (const maskedRect of maskedRects) {
       if (width === latestImage.width && height === latestImage.height) {
-      // mask off the area from both baseline and latest file because, e.g. on
-      // iOS the home button appearance changes gradually in response to stuff
-      // going on
-        [baselineImageData, latestImageData].forEach((img) => {
+        // mask off the area from both baseline and latest file because, e.g. on
+        // iOS the home button appearance changes gradually in response to stuff
+        // going on
+        ;[baselineImageData, latestImageData].forEach((img) => {
           for (let dx = 0; dx < maskedRect.width; dx++) {
             for (let dy = 0; dy < maskedRect.height; dy++) {
               const x = maskedRect.left + dx
@@ -92,13 +98,7 @@ export const diffImages = async (pal: PlatformAbstractionLayer, screenshotsDir: 
       }
     }
 
-    const diffPixelsCount = pixelmatch(
-      baselineImageData,
-      latestImageData,
-      diffImage.data,
-      width,
-      height
-    )
+    const diffPixelsCount = pixelmatch(baselineImageData, latestImageData, diffImage.data, width, height)
 
     if (diffPixelsCount === 0) {
       return {
@@ -112,6 +112,8 @@ export const diffImages = async (pal: PlatformAbstractionLayer, screenshotsDir: 
     // Create and save the diff image
     await fs.writeFile(diffPath, PNG.sync.write(diffImage))
     await fs.writeFile(latestFilePath, PNG.sync.write(latestImage))
+
+    // FIXME -- add support for a certain number of differing pixels
 
     return {
       message: `Compared screenshot to match baseline. ${diffPixelsCount} were different.`,

@@ -5,11 +5,11 @@
 //  Created by Modern Logic on 2022-12-13
 //  Copyright © 2022 Modern Logic, LLC. All Rights Reserved.
 
-import { CliRunOptions } from '../../CliRunOptions'
-import { Config } from '../../Config'
-import { xcrun } from './xcrun'
-import { PlatformAbstractionLayer, Rect } from '../PlatformAbstractionLayer'
+import type { CliRunOptions } from '../../CliRunOptions'
+import type { Config } from '../../Config'
 import { sleep } from '../../sleep'
+import type { PlatformAbstractionLayer, Rect } from '../PlatformAbstractionLayer'
+import { xcrun } from './xcrun'
 
 export class IOSPlatformAbstraction implements PlatformAbstractionLayer {
   private readonly device: string
@@ -21,19 +21,16 @@ export class IOSPlatformAbstraction implements PlatformAbstractionLayer {
     this.appName = config.ios.appName
   }
 
-  public get name (): 'ios' | 'android' {
-    return 'ios'
-  }
+  public readonly name = 'ios'
 
   async launch (snapPort: number): Promise<void> {
     const RCT_METRO_PORT = process.env.RCT_METRO_PORT ?? this.cliArgs.port
-    const additionalArgs: string[] = RCT_METRO_PORT !== undefined ? ['-RCT_jsLocation', `localhost:${RCT_METRO_PORT}`] : []
+    const additionalArgs: string[] =
+      RCT_METRO_PORT !== undefined ? ['-RCT_jsLocation', `localhost:${RCT_METRO_PORT}`] : []
     const storybookPage = this.cliArgs.limit
     await xcrun(['simctl', 'launch', this.device, this.bundleId, ...additionalArgs], {
-
       SIMCTL_CHILD_storybookPage: storybookPage === undefined ? 'turbo' : `turbo:${storybookPage}`,
       SIMCTL_CHILD_snapPort: `${snapPort}`
-
     })
   }
 
@@ -71,7 +68,28 @@ export class IOSPlatformAbstraction implements PlatformAbstractionLayer {
     await xcrun(['simctl', 'ui', 'booted', 'appearance', 'light'])
 
     // Set up the status bar to be in a consistent state
-    await xcrun(['simctl', 'status_bar', this.device, 'override', '--time', 'SNAP', '--dataNetwork', 'lte', '--wifiMode', 'active', '--wifiBars', '3', '--cellularBars', '4', '--cellularMode', 'active', '--batteryState', 'charged', '--batteryLevel', '75'])
+    await xcrun([
+      'simctl',
+      'status_bar',
+      this.device,
+      'override',
+      '--time',
+      'SNAP',
+      '--dataNetwork',
+      'lte',
+      '--wifiMode',
+      'active',
+      '--wifiBars',
+      '3',
+      '--cellularBars',
+      '4',
+      '--cellularMode',
+      'active',
+      '--batteryState',
+      'charged',
+      '--batteryLevel',
+      '75'
+    ])
 
     // wait for status bar to update
     await sleep(200)

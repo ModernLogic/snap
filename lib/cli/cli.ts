@@ -8,13 +8,12 @@
 import fs from 'fs/promises'
 import * as Http from 'http'
 
+import type { CliRunOptions } from './CliRunOptions'
+import { createRequestAsyncHandler } from './createRequestAsyncHandler'
 import { AndroidPlatformAbstraction } from './pal/android/AndroidPlatformAbstraction'
 import { IOSPlatformAbstraction } from './pal/ios/IOSPlatformAbstraction'
-
 import { readConfig } from './readConfig'
-import { CliRunOptions } from './CliRunOptions'
 import { sleep } from './sleep'
-import { createRequestAsyncHandler } from './createRequestAsyncHandler'
 
 export interface TestResults {
   fail: number
@@ -35,7 +34,8 @@ const runHandlerNoTry = async (args: CliRunOptions): Promise<number> => {
   console.log('runHandler', args.platform)
   const config = await readConfig(args.config)
   const platform = args.platform
-  const pal = args.platform === 'ios' ? new IOSPlatformAbstraction(args, config) : new AndroidPlatformAbstraction(args, config)
+  const pal =
+    args.platform === 'ios' ? new IOSPlatformAbstraction(args, config) : new AndroidPlatformAbstraction(args, config)
 
   const update = args.update
   const snapshots = '.snap/snapshots'
@@ -91,7 +91,9 @@ const runHandlerNoTry = async (args: CliRunOptions): Promise<number> => {
     const srv = Http.createServer(function (req, res) {
       let content = ''
       req.on('data', (chunk: string) => (content = content + chunk))
-      req.on('end', () => handleRequest(content, res, done))
+      req.on('end', () => {
+        handleRequest(content, res, done)
+      })
       connected = true
     })
     srv.on('clientError', (err, socket) => {
@@ -109,10 +111,12 @@ const runHandlerNoTry = async (args: CliRunOptions): Promise<number> => {
         //   SIMCTL_CHILD_storybookPage: limit === undefined ? 'turbo' : `turbo:${limit}`,
         //   SIMCTL_CHILD_snapPort: `${address.port}`
         // })
-        pal.launch(address.port)
+        pal
+          .launch(address.port)
           .then(() => {
             console.log(`Listening on port ${address.port}`)
-          }).catch(e => {
+          })
+          .catch((e) => {
             console.warn('Failed to launch using simctl -- bailing')
             done()
           })

@@ -5,17 +5,17 @@
 //  Created by Modern Logic on 2022-11-09
 //  Copyright © 2022 Modern Logic, LLC. All Rights Reserved.
 
-import { runHandler } from './cli'
-import { readConfig } from './readConfig'
+import type { ChildProcessWithoutNullStreams } from 'child_process'
 import net from 'net'
-import process from 'node:process'
 import { spawn } from 'node:child_process'
-import { ChildProcessWithoutNullStreams } from 'child_process'
-import { sleep } from './sleep'
+import process from 'node:process'
+import { runHandler } from './cli'
+import type { CliRunOptions } from './CliRunOptions'
 import { IOSPlatformAbstraction } from './pal/ios/IOSPlatformAbstraction'
-import { CliRunOptions } from './CliRunOptions'
 import { AndroidPlatformAbstraction } from './pal/android/AndroidPlatformAbstraction'
-import { PlatformAbstractionLayer } from './pal/PlatformAbstractionLayer'
+import type { PlatformAbstractionLayer } from './pal/PlatformAbstractionLayer'
+import { readConfig } from './readConfig'
+import { sleep } from './sleep'
 
 async function findAvailablePort (): Promise<number> {
   return await new Promise((resolve, reject) => {
@@ -41,7 +41,8 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
   const config = await readConfig(args.config)
   const platform = args.platform
   const skipInstall = args.skipInstall ?? false
-  const pal: PlatformAbstractionLayer = platform === 'ios' ? new IOSPlatformAbstraction(args, config) : new AndroidPlatformAbstraction(args, config)
+  const pal: PlatformAbstractionLayer =
+    platform === 'ios' ? new IOSPlatformAbstraction(args, config) : new AndroidPlatformAbstraction(args, config)
 
   // const {
   //   simulator: device,
@@ -91,8 +92,12 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
   // FIXME what if the react-native app uses npm instead of yarn?
   const yarnProc = spawn('yarn', ['start', '--port', `${port}`], { detached: true })
 
-  yarnProc.stdout.on('data', (data) => console.log('metro: ', bufferToString(data)))
-  yarnProc.stderr.on('data', (data) => console.log('METRO: ', bufferToString(data)))
+  yarnProc.stdout.on('data', (data) => {
+    console.log('metro: ', bufferToString(data))
+  })
+  yarnProc.stderr.on('data', (data) => {
+    console.log('METRO: ', bufferToString(data))
+  })
   const yarnExited = new Promise<number | null>((resolve) => {
     yarnProc.on('close', (code) => {
       // console.log('metro close', code)
@@ -114,8 +119,7 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
     const doIt = async (): Promise<void> => {
       await cleanupMetroProcess(yarnProc, yarnExited)
     }
-    doIt().finally(() => process.exit()
-    )
+    void doIt().finally(() => process.exit())
   })
 
   await sleep(15000)
@@ -139,11 +143,14 @@ const bufferToString = (data: any): string => {
   return 'NOSTR'
 }
 
-async function cleanupMetroProcess (yarnProc: ChildProcessWithoutNullStreams, yarnExited: Promise<number | null>): Promise<void> {
+async function cleanupMetroProcess (
+  yarnProc: ChildProcessWithoutNullStreams,
+  yarnExited: Promise<number | null>
+): Promise<void> {
   killProcGroup(yarnProc)
   // console.log('...kill message sent.  Awaiting exit...')
 
-  const code = await (yarnExited)
+  const code = await yarnExited
   if (code !== null && code !== 0) {
     console.log(`...Metro exited with code ${code ?? -1}`)
   }

@@ -6,7 +6,8 @@
 //  Copyright © 2022 Modern Logic, LLC. All Rights Reserved.
 
 import fs from 'fs/promises'
-import { Config } from './Config'
+
+import type { Config } from './Config'
 
 export async function readConfig (configPath?: string): Promise<Config> {
   if (configPath === undefined) {

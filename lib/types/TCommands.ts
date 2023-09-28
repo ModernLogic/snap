@@ -23,12 +23,7 @@ interface TestResultCommand {
 interface XCRunCommand {
   command: 'xcrun'
   args?: string[]
-  env?: {}
+  env?: Record<string, string>
 }
 
-export type TCommand =
-    | QuitCommand
-    | EchoCommand
-    | SnapshotCommand
-    | TestResultCommand
-    | XCRunCommand
+export type TCommand = QuitCommand | EchoCommand | SnapshotCommand | TestResultCommand | XCRunCommand

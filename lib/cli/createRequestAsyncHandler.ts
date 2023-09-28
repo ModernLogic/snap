@@ -6,14 +6,21 @@
 //  Copyright © 2023 Modern Logic, LLC. All Rights Reserved.
 
 import fs from 'fs/promises'
-import * as Http from 'http'
-import { TCommand } from '../types/TCommands'
+import type * as Http from 'http'
+
+import type { TCommand } from '../types/TCommands'
+import type { TestResults } from './cli'
 import { diffImages } from './diffImages'
 import { xcrun } from './pal/ios/xcrun'
-import { PlatformAbstractionLayer } from './pal/PlatformAbstractionLayer'
-import { TestResults } from './cli'
+import type { PlatformAbstractionLayer } from './pal/PlatformAbstractionLayer'
 
-export function createRequestAsyncHandler (latestSnapshots: string, pal: PlatformAbstractionLayer, snapshots: string, update: boolean, testResults: TestResults) {
+export function createRequestAsyncHandler (
+  latestSnapshots: string,
+  pal: PlatformAbstractionLayer,
+  snapshots: string,
+  update: boolean,
+  testResults: TestResults
+) {
   return async (content: string, res: Http.ServerResponse, done: () => void): Promise<void> => {
     try {
       const json: TCommand = JSON.parse(content)
