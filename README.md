@@ -1,3 +1,5 @@
+[![Typescript](https://github.com/ModernLogic/snap/actions/workflows/typescript.yml/badge.svg)](https://github.com/ModernLogic/snap/actions/workflows/typescript.yml)
+
 # snap
 
 A simple cli that facilitates rapid snapshot testing
