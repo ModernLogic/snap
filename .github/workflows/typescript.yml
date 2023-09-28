@@ -1,0 +1,40 @@
+name: Typescript
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'releases/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+      - 'releases/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  typescript_lint_and_test:
+    name: Run TSC and Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      - name: npm ci
+        run: |
+          npm ci
+
+      - name: Compile typescript
+        run: |
+          npm run tsc
+
+      - name: lint
+        run: |
+          npm run ci:lint
+
