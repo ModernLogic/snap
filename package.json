@@ -83,6 +83,7 @@
     "lint": "eslint lib --ext .ts,.tsx",
     "tsc": "tsc --noEmit",
     "ci:lint": "eslint lib --max-warnings 0 --ext .ts,.tsx",
+    "incrementVersion": "node ./scripts/incrementVersion.js",
     "release": "release-it",
     "tar": "npm run build && mkdir -p package && cp -r dist package && cp package.json package && cp README.md package && tar -czf package.tgz package && rm -rf package"
   },

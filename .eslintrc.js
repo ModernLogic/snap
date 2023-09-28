@@ -11,11 +11,14 @@ module.exports = {
                 "node": true
             },
             "files": [
-                ".eslintrc.{js,cjs}"
+                ".eslintrc.{js,cjs}",
+                "./scripts/incrementVersion.js"
             ],
             "parserOptions": {
                 "sourceType": "script"
-            }
+            },
+
+            extends: ['plugin:@typescript-eslint/disable-type-checked'],        
         }
     ],
     "parserOptions": {
@@ -25,7 +28,6 @@ module.exports = {
     "plugins": [
         "react",
         "eslint-plugin-prettier"
-
     ],
     "rules": {
     },
