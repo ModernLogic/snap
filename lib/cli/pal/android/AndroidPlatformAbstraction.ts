@@ -21,7 +21,7 @@ import { sdkmanager } from './sdkmanager'
 import { makeZipalign } from './zipalign'
 
 export class AndroidPlatformAbstraction implements PlatformAbstractionLayer {
-  private n: number
+  private snapshotNumber: number
   private emulatorProc: any
   private readonly apksigner: (
     args: string[],
@@ -40,7 +40,7 @@ export class AndroidPlatformAbstraction implements PlatformAbstractionLayer {
   }
 
   constructor (private readonly cliArgs: CliRunOptions, private readonly config: Config) {
-    this.n = 0
+    this.snapshotNumber = 0
     this.apksigner = makeApksigner(config)
     this.zipalign = makeZipalign(config)
   }
@@ -131,8 +131,8 @@ export class AndroidPlatformAbstraction implements PlatformAbstractionLayer {
     // on Android images fade in so we must wait for that to finish
     await sleep(300)
 
-    const shotNumber = this.n
-    this.n = shotNumber + 1
+    const shotNumber = this.snapshotNumber
+    this.snapshotNumber = shotNumber + 1
     const tmpFile = `/sdcard/screenshot_${shotNumber}.png`
     await adb(['shell', 'screencap', '-p', tmpFile])
     await adb(['pull', tmpFile, filename])
