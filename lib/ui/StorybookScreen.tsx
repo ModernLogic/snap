@@ -1,8 +1,8 @@
-
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
+
 import { TurboStorybookContainer } from '../hooks'
-import { TStory, TSubStory } from '../types'
+import type { TStory, TSubStory } from '../types'
 import { ErrorBoundary } from './ErrorBoundary'
 
 export const StorybookScreen: React.FC<{

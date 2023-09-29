@@ -6,11 +6,12 @@
 //  Created by Modern Logic on 2022-09-04
 //  Copyright © 2022 Modern Logic, LLC. All Rights Reserved.
 
-import yargs from 'yargs'
-import { hideBin } from 'yargs/helpers'
-import { runCiTest } from './ci'
 import { exit } from 'process'
 
+import yargs from 'yargs'
+import { hideBin } from 'yargs/helpers'
+
+import { runCiTest } from './ci'
 import { runHandler } from './cli'
 
 const plaformOption: yargs.Options = {

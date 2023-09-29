@@ -3,33 +3,35 @@
   "bin": "./dist/cli/index.js",
   "dependencies": {
     "pixelmatch": "^5.3.0",
-    "pngjs": "^6.0.0",
-    "yargs": "^17.5.1"
+    "pngjs": "^7.0.0",
+    "yargs": "^17.7.2"
   },
   "description": "FAST visual regression testing for React Native",
   "devDependencies": {
     "@react-navigation/native": "*",
     "@react-navigation/stack": "*",
-    "@release-it/conventional-changelog": "^5.1.0",
-    "@tsconfig/node16": "^1.0.3",
-    "@types/node": "^18.7.14",
+    "@release-it/conventional-changelog": "^7.0.1",
+    "@tsconfig/node16": "^16.1.1",
+    "@types/node": "^20.6.1",
     "@types/pixelmatch": "^5.2.4",
     "@types/pngjs": "^6.0.1",
     "@types/react": "*",
     "@types/react-native": "*",
-    "@types/yargs": "^17.0.12",
-    "@typescript-eslint/eslint-plugin": "^5.36.1",
-    "@typescript-eslint/parser": "^5.36.1",
-    "eslint": "^8.23.0",
-    "eslint-config-standard-with-typescript": "^22.0.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-n": "^15.2.5",
-    "eslint-plugin-promise": "^6.0.1",
+    "@types/yargs": "^17.0.24",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.0",
+    "eslint": "^8.50.0",
+    "eslint-config-standard-with-typescript": "^39.1.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-n": "^16.1.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-react": "^7.33.2",
     "import-sort-style-module": "^6.0.0",
-    "prettier": "^2.7.1",
+    "prettier": "^2.8.8",
     "prettier-plugin-import-sort": "^0.0.7",
     "release-it": "*",
-    "typescript": "^4.8.2",
+    "typescript": "^5.2.2",
     "unstated-next": "*"
   },
   "files": [
@@ -47,7 +49,7 @@
   "license": "UNLICENSED",
   "main": "./dist/index.js",
   "name": "@modernlogic/snap",
-  "packageManager": "yarn@3.2.4",
+  "packageManager": "npm@9.6.7",
   "peerDependencies": {
     "@react-navigation/native": "*",
     "@react-navigation/stack": "*",
@@ -78,12 +80,14 @@
   "repository": "https://github.com/ModernLogic/snap",
   "scripts": {
     "build": "tsc && chmod +x ./dist/cli/index.js",
-    "lint": "eslint",
-    "prettier:apply": "prettier --write 'lib/**/*.{js,ts,tsx}'",
-    "prettier:check": "prettier --check 'lib/**/*.{js,ts,tsx}'",
+    "lint": "eslint lib --ext .ts,.tsx",
+    "tsc": "tsc --noEmit",
+    "ci:lint": "eslint lib --max-warnings 0 --ext .ts,.tsx",
+    "incrementVersion": "node ./scripts/incrementVersion.js",
+    "dev:try": "function trydev { VERSION=`jq .version -r < package.json`; SRC=`pwd`; test -f $1/package.json || return -1; npm run tar && rm ~/.yarn/berry/cache/@modernlogic-* && (cd $1; rm ..vendor/@modernlogic/snap*; cp $SRC/package.tgz ./vendor/@modernlogic/snap_$VERSION.tgz; yarn remove @modernlogic/snap; yarn add ./vendor/@modernlogic/snap_$VERSION.tgz) } && trydev",
     "release": "release-it",
-    "tar": "yarn build && mkdir -p package && cp -r dist package && cp package.json package && cp README.md package && tar -cf package.tar package && rm -rf package"
+    "tar": "npm run build && mkdir -p package && cp -r dist package && cp package.json package && cp README.md package && tar -czf package.tgz package && rm -rf package"
   },
   "types": "./dist/index.d.ts",
-  "version": "0.0.12"
+  "version": "0.0.16+1"
 }

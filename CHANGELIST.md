@@ -1,3 +1,10 @@
+# v0.0.14
+
+First release for Android. Still a lot of hard coded assumptions that will need
+to be refactored, either as config parameters or command line arguments.
+
+Switch from yarn to npm
+
 # v0.0.12
 
 The simulator status bar is now set to an override so it always looks the same.
@@ -13,7 +20,7 @@ Kill off all of metro node child processes when exiting.
 Introducing new command
 
 ```
-yarn citest
+npm run citest
 ```
 
 Now github actions can run snap tests with all the extra steps (installing in simulator, relaunching simulator, etc...) without a helper script.

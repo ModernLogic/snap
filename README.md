@@ -41,7 +41,7 @@ Add `"@modernlogic/snap": "./vendor/@modernlogic/snap_0.0.4.tgz"` in `package.js
 Run
 
 ```sh
-yarn install
+npm i
 ```
 
 Add in the `.gitignore` file
@@ -158,10 +158,20 @@ storybookPage=turbo
 Here's Andy's quick and dirty guide to developing snap.
 
 - Code up some new changes in this repo
-- run `yarn tar` to generate a temporary .tgz file called `package.tgz` in this directory
+- run `npm run tar` to generate a temporary .tgz file called `package.tgz` in this directory
 - Clear the yarn cache `rm ~/.yarn/berry/cache/@modernlogic-*`
 - From the iOS app directory:
   - Copy the package.tgz into your project, e.g. `cp ../@modernlogic/snap/package.tgz ./vendor/@modernlogic/snap_0.0.9.tgz`
   - remove, and then reinstall the package: `yarn remove @modernlogic/snap` and then `yarn add ./vendor/@modernlogic/snap_0.0.9.tgz`
 - now you can run `yarn snap test` or other commands and see if it works better with your new changes.
 - Be sure to delete package.tgz -- it doesn't need to be added to source control.
+
+_An alternate_
+
+You can also just do
+
+```
+npm run dev:try ../../understood
+```
+
+To do the same sequence of steps.
