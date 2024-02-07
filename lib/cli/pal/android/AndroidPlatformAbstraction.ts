@@ -196,8 +196,8 @@ export class AndroidPlatformAbstraction implements PlatformAbstractionLayer {
   }
 
   async install (): Promise<void> {
-    if (await adb(['install', '-f', 'android/app/build/outputs/apk/release/app-release.apk']) != 0) //try an already signed release
-    {
+    // try an already signed release first
+    if (await adb(['install', '-f', 'android/app/build/outputs/apk/release/app-release.apk']) !== 0) {
       try {
         await unlink('android/app/build/outputs/apk/release/app-release-signed.apk')
       } catch {
@@ -214,7 +214,7 @@ export class AndroidPlatformAbstraction implements PlatformAbstractionLayer {
         'android/app/build/outputs/apk/release/app-release-unsigned.apk',
         'android/app/build/outputs/apk/release/app-release-unsigned-aligned.apk'
       ]).result
-  
+
       await this.apksigner([
         'sign',
         '--ks',
@@ -229,9 +229,9 @@ export class AndroidPlatformAbstraction implements PlatformAbstractionLayer {
         'android/app/build/outputs/apk/release/app-release-signed.apk',
         'android/app/build/outputs/apk/release/app-release-unsigned-aligned.apk'
       ]).result
-  
+
       await adb(['install', '-f', 'android/app/build/outputs/apk/release/app-release-signed.apk'])
-    }  
+    }
   }
 
   async cleanup (): Promise<void> {
