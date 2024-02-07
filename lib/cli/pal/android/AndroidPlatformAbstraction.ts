@@ -196,39 +196,42 @@ export class AndroidPlatformAbstraction implements PlatformAbstractionLayer {
   }
 
   async install (): Promise<void> {
-    try {
-      await unlink('android/app/build/outputs/apk/release/app-release-signed.apk')
-    } catch {
-      // ignore
-    }
-    try {
-      await unlink('android/app/build/outputs/apk/release/app-release-unsigned-aligned.apk')
-    } catch {
-      // ignore
-    }
-    await this.zipalign([
-      '-p',
-      '4',
-      'android/app/build/outputs/apk/release/app-release-unsigned.apk',
-      'android/app/build/outputs/apk/release/app-release-unsigned-aligned.apk'
-    ]).result
+    // try an already signed release first
+    if (await adb(['install', '-f', 'android/app/build/outputs/apk/release/app-release.apk']) !== 0) {
+      try {
+        await unlink('android/app/build/outputs/apk/release/app-release-signed.apk')
+      } catch {
+        // ignore
+      }
+      try {
+        await unlink('android/app/build/outputs/apk/release/app-release-unsigned-aligned.apk')
+      } catch {
+        // ignore
+      }
+      await this.zipalign([
+        '-p',
+        '4',
+        'android/app/build/outputs/apk/release/app-release-unsigned.apk',
+        'android/app/build/outputs/apk/release/app-release-unsigned-aligned.apk'
+      ]).result
 
-    await this.apksigner([
-      'sign',
-      '--ks',
-      this.config.android.keystore,
-      '--ks-key-alias',
-      this.config.android.keyAlias,
-      '--ks-pass',
-      'env:ANDROID_RELEASE_KEYSTORE_PASSWORD',
-      '--key-pass',
-      'env:ANDROID_RELEASE_KEY_PASSWORD',
-      '--out',
-      'android/app/build/outputs/apk/release/app-release-signed.apk',
-      'android/app/build/outputs/apk/release/app-release-unsigned-aligned.apk'
-    ]).result
+      await this.apksigner([
+        'sign',
+        '--ks',
+        this.config.android.keystore,
+        '--ks-key-alias',
+        this.config.android.keyAlias,
+        '--ks-pass',
+        'env:ANDROID_RELEASE_KEYSTORE_PASSWORD',
+        '--key-pass',
+        'env:ANDROID_RELEASE_KEY_PASSWORD',
+        '--out',
+        'android/app/build/outputs/apk/release/app-release-signed.apk',
+        'android/app/build/outputs/apk/release/app-release-unsigned-aligned.apk'
+      ]).result
 
-    await adb(['install', '-f', 'android/app/build/outputs/apk/release/app-release-signed.apk'])
+      await adb(['install', '-f', 'android/app/build/outputs/apk/release/app-release-signed.apk'])
+    }
   }
 
   async cleanup (): Promise<void> {
