@@ -49,7 +49,6 @@ export class AndroidPlatformAbstraction implements PlatformAbstractionLayer {
 
   async createDevice (): Promise<void> {
     console.log('Snapshot device not found ... creating')
-    console.log("HELLO THERE")
     const sdkId = this.config.android.device.sdkId ?? 'system-images;android-25;google_apis;arm64-v8a'
     const name = this.config.android.device.name ?? 'Snapshot_device'
 
