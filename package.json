@@ -89,5 +89,5 @@
     "tar": "npm run build && mkdir -p package && cp -r dist package && cp package.json package && cp README.md package && tar -czf package.tgz package && rm -rf package"
   },
   "types": "./dist/index.d.ts",
-  "version": "0.0.18+1"
+  "version": "0.0.19+1"
 }
