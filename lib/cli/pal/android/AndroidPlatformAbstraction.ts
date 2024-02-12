@@ -188,7 +188,7 @@ export class AndroidPlatformAbstraction implements PlatformAbstractionLayer {
     }
     this.emulatorProc = emulator(['-avd', snapDevice[0].Name]).proc
 
-    await adb(['wait-for-device'])
+    await adb(['wait-for-device', 'shell', 'while', '[', '-z', '$(getprop', 'dev.bootcomplete)', ']', ';', 'do', 'echo', 'Waiting...;', 'sleep', '1;', 'done'])
   }
 
   async uninstall (): Promise<void> {
