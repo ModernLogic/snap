@@ -48,17 +48,6 @@ export const diffImages = async (
     const { filePath: baselinePath, dirPath: baselineDir } = imagePath(screenshotsDir, pal.name, 'reference', filename)
     await fs.mkdir(baselineDir, { recursive: true })
 
-    if (update) {
-      await fs.copyFile(latestFilePath, baselinePath)
-      console.log('Updated reference')
-      return {
-        message: 'Updated baseline',
-        pass: true,
-        diffPixelsCount: 0,
-        diffPath
-      }
-    }
-
     await fs.mkdir(diffDir, { recursive: true })
 
     const baselineData = await fs.readFile(baselinePath)
@@ -105,6 +94,17 @@ export const diffImages = async (
         message: 'Compared screenshot to match baseline. No differences were found.',
         pass: true,
         diffPixelsCount,
+        diffPath
+      }
+    }
+
+    if (update) {
+      await fs.writeFile(baselinePath, PNG.sync.write(latestImage))
+      console.log('Updated reference')
+      return {
+        message: 'Updated baseline',
+        pass: true,
+        diffPixelsCount: 0,
         diffPath
       }
     }

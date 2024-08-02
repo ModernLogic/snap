@@ -10,6 +10,12 @@ export interface Config {
     bundleIdentifier: string
     simulator: string
     appName: string
+    blackoutRegions?: Array<{
+      top: number
+      left: number
+      width: number
+      height: number
+    }>
   }
   android: {
     package: string
@@ -22,5 +28,11 @@ export interface Config {
       sdkId?: string // e.g. system-images;android-25;google_apis;x86_64
       deviceDefinition?: string // e.g. pixel_xl
     }
+    blackoutRegions?: Array<{
+      top: number
+      left: number
+      width: number
+      height: number
+    }>
   }
 }

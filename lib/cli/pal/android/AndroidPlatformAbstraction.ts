@@ -140,6 +140,9 @@ export class AndroidPlatformAbstraction implements PlatformAbstractionLayer {
   }
 
   async maskedRects (width: number, height: number): Promise<Rect[]> {
+    if (this.config.android.blackoutRegions !== undefined) {
+      return this.config.android.blackoutRegions
+    }
     if (this.config.android.device.name === 'MoLo_SNAP_Pixel_XL_API_32') {
       const pixelXL = { width: 1440, height: 2560 }
       const clockReadout = { top: 20, left: 20, width: 190, height: 45 }

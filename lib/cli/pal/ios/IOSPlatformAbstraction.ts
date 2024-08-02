@@ -43,6 +43,9 @@ export class IOSPlatformAbstraction implements PlatformAbstractionLayer {
   }
 
   async maskedRects (width: number, height: number): Promise<Rect[]> {
+    if (this.config.ios.blackoutRegions !== undefined) {
+      return this.config.ios.blackoutRegions
+    }
     if (this.device === 'iPhone 13') {
       const iPhone13 = { width: 1170, height: 2532 }
       const homeButton = { top: 2492, left: 374, width: 424, height: 20 }
