@@ -72,7 +72,7 @@ const runHandlerNoTry = async (args: CliRunOptions): Promise<number> => {
     const done = (): void => {
       console.log(JSON.stringify(testResults))
       srv.close()
-      if (testResults.fail === 0) {
+      if (testResults.fail === 0 && testResults.test > 0) {
         resolve(0)
       }
       resolve(1)
