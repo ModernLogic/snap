@@ -27,21 +27,11 @@ Create `.snaprc.json` file in the root directory changing the `bundleIdentifier`
 {
     "ios": {
 
-        "bundleIdentifier": "com.soundstrue.soundstrueone",
+        "bundleIdentifier": "com.example.example",
         "simulator": "iPhone 13",
-        "appName": "Wunder.app"
+        "appName": "Example.app"
     }
 }
-```
-
-Copy the file `snap_0.0.4.tgz` into `vendor/@modernlogic` directory.
-
-Add `"@modernlogic/snap": "./vendor/@modernlogic/snap_0.0.4.tgz"` in `package.json` file
-
-Run
-
-```sh
-npm i
 ```
 
 Add in the `.gitignore` file
@@ -171,7 +161,7 @@ _An alternate_
 You can also just do
 
 ```
-npm run dev:try ../../understood
+npm run dev:try ../../<project_dir_name>
 ```
 
 To do the same sequence of steps.
