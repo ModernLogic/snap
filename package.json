@@ -48,7 +48,7 @@
   },
   "license": "UNLICENSED",
   "main": "./dist/index.js",
-  "name": "@modernlogic/snap",
+  "name": "@modern-logic/snap",
   "packageManager": "npm@10.7.0",
   "peerDependencies": {
     "@react-navigation/native": "*",
@@ -77,7 +77,13 @@
       }
     }
   },
-  "repository": "https://github.com/ModernLogic/snap",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ModernLogic/snap"
+  },
+  "bugs": {
+    "url": "https://github.com/ModernLogic/snap/issues"
+  },
   "scripts": {
     "build": "tsc && chmod +x ./dist/cli/index.js",
     "lint": "eslint lib --ext .ts,.tsx",
