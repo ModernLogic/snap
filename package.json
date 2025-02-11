@@ -57,9 +57,6 @@
     "react-native": "*",
     "unstated-next": "*"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
   "release-it": {
     "git": {
       "commitMessage": "chore: release ${version}",
