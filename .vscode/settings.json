@@ -23,9 +23,6 @@
     "**/dist": true,
     ".jest": true
   },
-  "files.exclude": {
-    "**/dist": true
-  },
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
