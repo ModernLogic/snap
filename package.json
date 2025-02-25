@@ -97,5 +97,5 @@
       "default": "./dist/index.js"
     }
   },
-  "version": "0.0.23+1"
+  "version": "0.0.24"
 }
