@@ -91,8 +91,9 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
 
   const packageManager = config.packageManager ?? 'yarn'
   const runScript = packageManager === 'yarn' ? [] : ['run']
+  const separator = packageManager === 'yarn' ? [] : ['--']
 
-  const pkgMgrProc = spawn(packageManager, [...runScript, 'start', '--port', `${port}`], { detached: true })
+  const pkgMgrProc = spawn(packageManager, [...runScript, 'start', ...separator, '--port', `${port}`], { detached: true })
 
   pkgMgrProc.stdout.on('data', (data) => {
     console.log('metro: ', bufferToString(data))
