@@ -5,6 +5,20 @@ import { LogBox } from 'react-native'
 import type { TStory, TStorybookProps, TSubStory } from '../types'
 import { definePattern } from '../utils'
 
+interface StackParamsList {
+  // E_ROOT_STACK
+  ['RootStack']: { screen: any }
+  ['XXX-END-XXX']: undefined
+}
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace ReactNavigation {
+    // eslint-disable-next-line @typescript-eslint/no-empty-interface
+    interface RootParamList extends StackParamsList {}
+  }
+}
+
 export interface TUseTurboStorybookResult {
   pages: Array<{ story: TStory, substory: TSubStory }>
   doSnapshot: () => void
@@ -49,7 +63,7 @@ export function useTurboStorybook (props?: TStorybookProps & { Stories: TStory[]
     console.log(`There are ${flattened.length} snapshot tests`)
     return flattened
   }, [pattern])
-  const { dispatch } = useNavigation()
+  const { navigate } = useNavigation()
   const [pageNumber, setPageNumberInternal] = useState(0)
   const setPageNumber = useCallback((pageNumber: number) => {
     setPageNumberInternal(pageNumber)
@@ -57,18 +71,10 @@ export function useTurboStorybook (props?: TStorybookProps & { Stories: TStory[]
     if (page !== undefined) {
       const { story, substory } = page
       const nextPageName = `${story.name}_${substory.name}`
-      console.log(`Next page #${pageNumber}: ${nextPageName}`)
-      const action = CommonActions.reset({
-        index: 0,
-        routes: [{ name: nextPageName as any }]
-      })
-      dispatch(action)
+
+      navigate('RootStack', { screen: nextPageName })
     } else {
-      const action = CommonActions.reset({
-        index: 0,
-        routes: [{ name: 'XXX-END-XXX' as any }]
-      })
-      dispatch(action)
+      navigate('RootStack', { screen: 'XXX-END-XXX' })
     }
   }, [])
 
