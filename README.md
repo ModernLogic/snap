@@ -93,7 +93,7 @@ module.exports = {
 Run
 
 ```sh
-yarn snap test -u
+npm run snap test -u
 ```
 
 This should write results in to `.snap/` directory
@@ -103,7 +103,7 @@ This should write results in to `.snap/` directory
 To test
 
 ```sh
-yarn snap test
+npm run snap test
 ```
 
 This should run against existing match files
@@ -113,7 +113,7 @@ Copy CI script, especially the test area
 ```javascript
       - name: run tests
         run: |
-          yarn snap citest
+          npm run snap citest
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -149,11 +149,10 @@ Here's Andy's quick and dirty guide to developing snap.
 
 - Code up some new changes in this repo
 - run `npm run tar` to generate a temporary .tgz file called `package.tgz` in this directory
-- Clear the yarn cache `rm ~/.yarn/berry/cache/@modernlogic-*`
 - From the iOS app directory:
   - Copy the package.tgz into your project, e.g. `cp ../@modernlogic/snap/package.tgz ./vendor/@modernlogic/snap_0.0.9.tgz`
-  - remove, and then reinstall the package: `yarn remove @modernlogic/snap` and then `yarn add ./vendor/@modernlogic/snap_0.0.9.tgz`
-- now you can run `yarn snap test` or other commands and see if it works better with your new changes.
+  - remove, and then reinstall the package: `npm remove @modernlogic/snap` and then `npm add ./vendor/@modernlogic/snap_0.0.9.tgz`
+- now you can run `npm snap test` or other commands and see if it works better with your new changes.
 - Be sure to delete package.tgz -- it doesn't need to be added to source control.
 
 _An alternate_

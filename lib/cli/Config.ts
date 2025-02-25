@@ -6,6 +6,7 @@
 //  Copyright © 2022 Modern Logic, LLC. All Rights Reserved.
 
 export interface Config {
+  packageManager?: 'npm' | 'yarn' | 'pnpm'
   ios: {
     bundleIdentifier: string
     simulator: string

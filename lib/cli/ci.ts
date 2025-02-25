@@ -89,35 +89,37 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
 
   const port = await findAvailablePort()
 
-  // FIXME what if the react-native app uses npm instead of yarn?
-  const yarnProc = spawn('yarn', ['start', '--port', `${port}`], { detached: true })
+  const packageManager = config.packageManager ?? 'yarn'
+  const runScript = packageManager === 'yarn' ? [] : ['run']
 
-  yarnProc.stdout.on('data', (data) => {
+  const pkgMgrProc = spawn(packageManager, [...runScript, 'start', '--port', `${port}`], { detached: true })
+
+  pkgMgrProc.stdout.on('data', (data) => {
     console.log('metro: ', bufferToString(data))
   })
-  yarnProc.stderr.on('data', (data) => {
+  pkgMgrProc.stderr.on('data', (data) => {
     console.log('METRO: ', bufferToString(data))
   })
-  const yarnExited = new Promise<number | null>((resolve) => {
-    yarnProc.on('close', (code) => {
+  const pkgMgrExited = new Promise<number | null>((resolve) => {
+    pkgMgrProc.on('close', (code) => {
       // console.log('metro close', code)
       resolve(code)
     })
-    yarnProc.on('exit', (code) => {
+    pkgMgrProc.on('exit', (code) => {
       // console.log('metro exit', code)
       resolve(code)
     })
-    yarnProc.on('disconnect', () => {
+    pkgMgrProc.on('disconnect', () => {
       console.log('METRO DISCONNECTED')
     })
-    yarnProc.on('error', (code) => {
+    pkgMgrProc.on('error', (code) => {
       console.log('METRO ERROR', code.message)
     })
   })
   process.on('SIGINT', () => {
     console.log('SIGINT!')
     const doIt = async (): Promise<void> => {
-      await cleanupMetroProcess(yarnProc, yarnExited)
+      await cleanupMetroProcess(pkgMgrProc, pkgMgrExited)
     }
     void doIt().finally(() => process.exit())
   })
@@ -128,7 +130,7 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
 
   console.log(`Done testing exitCode:${exitCode}. Terminating metro...`)
 
-  await cleanupMetroProcess(yarnProc, yarnExited)
+  await cleanupMetroProcess(pkgMgrProc, pkgMgrExited)
 
   await pal.cleanup()
   await pal.shutdown()
@@ -144,13 +146,13 @@ const bufferToString = (data: any): string => {
 }
 
 async function cleanupMetroProcess (
-  yarnProc: ChildProcessWithoutNullStreams,
-  yarnExited: Promise<number | null>
+  pkgMgrProc: ChildProcessWithoutNullStreams,
+  pkgMgrExited: Promise<number | null>
 ): Promise<void> {
-  killProcGroup(yarnProc)
+  killProcGroup(pkgMgrProc)
   // console.log('...kill message sent.  Awaiting exit...')
 
-  const code = await yarnExited
+  const code = await pkgMgrExited
   if (code !== null && code !== 0) {
     console.log(`...Metro exited with code ${code ?? -1}`)
   }
