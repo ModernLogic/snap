@@ -23,7 +23,6 @@ export const TurboStorybookInner: React.FC = () => {
 
       <Stack.Navigator screenOptions={{ headerShown: false, animation: 'none' }}>
         {pages.map(({ story, substory }, index) => {
-          console.log('Rendering story', story.name, substory.name)
           return (
             <Stack.Screen key={`${index}`} name={`${story.name}_${substory.name}`} {...getProps(substory, story.name)}>
               {(_props) => <StorybookScreen story={story} substory={substory} />}
