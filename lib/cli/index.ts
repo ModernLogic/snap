@@ -42,6 +42,13 @@ const skipInstallOption: yargs.Options = {
   default: false
 }
 
+const skipRebootOption: yargs.Options = {
+  alias: 'r',
+  describe: 'Skip reboot of emulator/simulator',
+  type: 'boolean',
+  default: false
+}
+
 const limitOption: yargs.Options = {
   alias: 't',
   describe: 'Only run this test',
@@ -60,6 +67,7 @@ const builderOptionsCITest = {
   config: configOption,
   platform: plaformOption,
   skipInstall: skipInstallOption,
+  skipReboot: skipRebootOption,
   limit: limitOption
 }
 

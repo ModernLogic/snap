@@ -5,4 +5,5 @@ export interface CliRunOptions {
   limit?: string
   port?: string
   skipInstall?: boolean
+  skipReboot?: boolean
 }

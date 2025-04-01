@@ -41,6 +41,7 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
   const config = await readConfig(args.config)
   const platform = args.platform
   const skipInstall = args.skipInstall ?? false
+  const skipReboot = args.skipReboot ?? false
   const pal: PlatformAbstractionLayer =
     platform === 'ios' ? new IOSPlatformAbstraction(args, config) : new AndroidPlatformAbstraction(args, config)
 
@@ -57,28 +58,28 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
   }
 
   await sleep(3000)
+  if (!skipReboot) {
+    console.log('Shutting down simulator (if booted)')
+    try {
+      await pal.shutdown()
+    } catch (e) {
+      console.log("Device wasn't booted")
+    }
 
-  console.log('Shutting down simulator (if booted)')
-  try {
-    await pal.shutdown()
-  } catch (e) {
-    console.log("Device wasn't booted")
+    // wait for simulator to shutdown
+    // fixme it'd be nice to know how long this really takes
+    await sleep(3000)
+
+    // Ensure hardware keyboard is connected -- no way to do this ?!?
+    // In Xcode 12 this worked, but it doesn't any more :(
+    // take JSON output from this command
+    // plutil -convert json -o - ~/Library/Preferences/com.apple.iphonesimulator.plist
+    // and then update that plist while the simulator is shutdown
+    // plutil -replace DevicePreferences.${TARGET_DEVICE_IDENTIFIER}.ConnectHardwareKeyboard -bool NO ~/Library/Preferences/com.apple.iphonesimulator.plist
+
+    console.log('Booting emulator/simulator')
+    await pal.boot()
   }
-
-  // wait for simulator to shutdown
-  // fixme it'd be nice to know how long this really takes
-  await sleep(3000)
-
-  // Ensure hardware keyboard is connected -- no way to do this ?!?
-  // In Xcode 12 this worked, but it doesn't any more :(
-  // take JSON output from this command
-  // plutil -convert json -o - ~/Library/Preferences/com.apple.iphonesimulator.plist
-  // and then update that plist while the simulator is shutdown
-  // plutil -replace DevicePreferences.${TARGET_DEVICE_IDENTIFIER}.ConnectHardwareKeyboard -bool NO ~/Library/Preferences/com.apple.iphonesimulator.plist
-
-  console.log('Booting emulator/simulator')
-  await pal.boot()
-
   if (!skipInstall) {
     console.log('Uninstall app...')
     await pal.uninstall()
