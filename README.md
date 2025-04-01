@@ -88,6 +88,76 @@ module.exports = {
 }
 ```
 
+## Android
+
+Create an xml file in `android/app/src/main/res/xml/network_security_config.xml`
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">localhost</domain>
+    </domain-config>
+</network-security-config>
+```
+
+and reference it in the ApplicationManifest.xml:
+
+```
+<application
+    android:networkSecurityConfig="@xml/network_security_config"
+>
+```
+
+also in that file add an intent to the main activity:
+
+```
+  <intent-filter>
+    <action android:name="io.modernlogic.snap.test" />
+    <category android:name="io.modernlogic.snap" />
+    <data android:mimeType="text/plain" />
+  </intent-filter>
+```
+
+To the MainActivity kotlin file, add a dynamic property to the class:
+
+```
+  val isMoLoSnap: Boolean
+    get() {
+      val intentAction = intent.action
+      return "io.modernlogic.snap" == intentAction
+    }
+```
+
+if a custom animation for splash screen is installed, make it conditional, e.g. in onCreate:
+
+```
+    if (!isMoLoSnap) {
+      SplashScreenModule.show(this)
+    }
+```
+
+Implement createReactActivityDelegate like so:
+
+```
+override fun createReactActivityDelegate(): ReactActivityDelegate {
+    return ReactActivityDelegateWrapper(
+      this,
+      BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,
+      object : DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled) {
+        override fun getLaunchOptions(): Bundle {
+          val initialProps = Bundle()
+          if (isMoLoSnap) {
+            intent.getStringExtra("snapPort")?.let { initialProps.putString("snapPort", it) }
+            intent.getStringExtra("storybookPage")?.let { initialProps.putString("storybookPage", it) }
+          }
+          return initialProps
+        }
+      }
+    )
+  }
+```
+
 ## Generating snaps
 
 Run
