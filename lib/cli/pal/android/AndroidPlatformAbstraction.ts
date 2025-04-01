@@ -178,7 +178,7 @@ export class AndroidPlatformAbstraction implements PlatformAbstractionLayer {
         )
       return Object.fromEntries(entries) as AvdDevice
     })
-    const snapDevice = deviceList.filter((d) => d.Name === this.config.android.device.name ?? 'Snapshot_device')
+    const snapDevice = deviceList.filter((d) => d.Name === (this.config.android.device.name ?? 'Snapshot_device'))
 
     if (snapDevice === undefined || snapDevice.length === 0) {
       if (tryToCreate) {
