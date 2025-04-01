@@ -86,7 +86,7 @@
     "lint": "eslint lib --ext .ts,.tsx",
     "tsc": "tsc --noEmit",
     "ci:lint": "eslint lib --max-warnings 0 --ext .ts,.tsx",
-    "incrementVersion": "node ./scripts/incrementVersion.js",
+    "incrementVersion": "echo 'Just run npm release -- it increments the version for you'",
     "dev:try": "function trydev { VERSION=`jq .version -r < package.json`; SRC=`pwd`; test -f $1/package.json || return -1; npm run tar && (cd $1; rm ..vendor/@modern-logic/snap*; cp $SRC/package.tgz ./vendor/@modern-logic/snap_$VERSION.tgz; npm remove @modern-logic/snap; npm add ./vendor/@modern-logic/snap_$VERSION.tgz) } && trydev",
     "release": "release-it",
     "tar": "npm run build && mkdir -p package && cp -r dist package && cp package.json package && cp README.md package && tar -czf package.tgz package && rm -rf package"
