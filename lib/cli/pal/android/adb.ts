@@ -6,7 +6,7 @@
 //  Copyright © 2022 Modern Logic, LLC. All Rights Reserved.
 
 import { spawn } from 'node:child_process'
-export async function adb (args: string[], env: Record<string, string> = {}): Promise<any> {
+export async function adb (args: string[], env: Record<string, string> = {}): Promise<number | null> {
   return await new Promise((resolve) => {
     const proc = spawn('adb', args)
 

@@ -192,10 +192,22 @@ export class AndroidPlatformAbstraction implements PlatformAbstractionLayer {
     this.emulatorProc = emulator(['-avd', snapDevice[0].Name]).proc
 
     await adb(['wait-for-device', 'shell', 'while', '[', '-z', '$(getprop', 'dev.bootcomplete)', ']', ';', 'do', 'echo', 'Waiting...;', 'sleep', '1;', 'done'])
+
+    // Emulators appear to need some extra time even after "dev.bootcomplete" is true
+    await sleep(5000)
   }
 
   async uninstall (): Promise<void> {
-    await adb(['uninstall', this.config.android.package])
+    let attempts = 2
+    while (attempts > 0) {
+      attempts = attempts - 1
+      const result = await adb(['uninstall', this.config.android.package])
+      if (result === 0) {
+        break
+      } else {
+        await sleep(1000)
+      }
+    }
   }
 
   async install (): Promise<void> {
