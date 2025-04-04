@@ -211,7 +211,7 @@ storybookPage=turbo
 
 ## Tips
 
-- If you have more than one simulator in Xcode with the same name as the simulator specified in your `.snaprc.json`, snap will only connect to the simulator with the most recent iOS version. For example, if you have two “iPhone 13”, one iOS 16.1 and one iOS 15.5, snap will only connect to iOS 16.1. Delete any simulators with a newer iOS version to fix this issue.
+- If you have more than one simulator in Xcode with the same name as the simulator specified in your `.snaprc.json`, snap will only connect to the simulator with the most recent iOS version. For example, if you have two "iPhone 13", one iOS 16.1 and one iOS 15.5, snap will only connect to iOS 16.1. Delete any simulators with a newer iOS version to fix this issue.
 
 # Developing
 
@@ -234,3 +234,24 @@ npm run dev:try ../../<project_dir_name>
 ```
 
 To do the same sequence of steps.
+
+# Releasing
+
+In order to release a new version:
+
+1. Make sure all your changes are committed and pushed
+2. Run `npm run release`
+3. This will:
+   - Bump the version number based on your commits (using conventional commits)
+   - Create a git tag
+   - Push the changes to GitHub
+   - Create a GitHub release
+   - Publish to npm
+
+The release process uses conventional commits to determine the version bump:
+
+- `feat:` commits trigger a minor version bump
+- `fix:` commits trigger a patch version bump
+- `BREAKING CHANGE:` in commit messages trigger a major version bump
+
+Make sure your commit messages follow the conventional commit format for proper version management.
