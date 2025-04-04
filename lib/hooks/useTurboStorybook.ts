@@ -1,4 +1,4 @@
-import { CommonActions, useNavigation } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 import { useCallback, useMemo, useState } from 'react'
 import { LogBox } from 'react-native'
 
