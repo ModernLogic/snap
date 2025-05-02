@@ -4,8 +4,7 @@
     "jsx": "react",
     "module": "NodeNext",
     /* Emit */
-    "declaration": true /* Generate .d.ts files from TypeScript and JavaScript files in your project. */,
-    "outDir": "./dist/"
+    "declaration": true /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
   },
   "include": ["lib"],
   "exclude": ["node_modules", "dist"]
