@@ -30,12 +30,17 @@
     "import-sort-style-module": "^6.0.0",
     "prettier": "^2.8.8",
     "prettier-plugin-import-sort": "^0.0.7",
+    "react-native-builder-bob": "^0.40.7",
     "release-it": "*",
     "typescript": "^5.2.2",
     "unstated-next": "*"
   },
   "files": [
-    "dist/",
+    "lib",
+    "dist",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
     "!dist/**/*.test.*",
     "scripts/",
     "README.md"
@@ -47,7 +52,7 @@
     }
   },
   "license": "UNLICENSED",
-  "main": "./dist/index.js",
+  "main": "./dist/module/index.js",
   "name": "@modern-logic/snap",
   "packageManager": "npm@10.7.0",
   "peerDependencies": {
@@ -89,13 +94,34 @@
     "incrementVersion": "echo 'Just run npm release -- it increments the version for you'",
     "dev:try": "function trydev { VERSION=`jq .version -r < package.json`; SRC=`pwd`; test -f $1/package.json || return -1; npm run tar && (cd $1; rm ..vendor/@modern-logic/snap*; cp $SRC/package.tgz ./vendor/@modern-logic/snap_$VERSION.tgz; npm remove @modern-logic/snap; npm add ./vendor/@modern-logic/snap_$VERSION.tgz) } && trydev",
     "release": "release-it",
-    "tar": "npm run build && mkdir -p package && cp -r dist package && cp package.json package && cp README.md package && tar -czf package.tgz package && rm -rf package"
+    "tar": "npm run build && mkdir -p package && cp -r dist package && cp package.json package && cp README.md package && tar -czf package.tgz package && rm -rf package",
+    "prepare": "bob build"
   },
-  "types": "./dist/index.d.ts",
+  "types": "./dist/typescript/index.d.ts",
   "exports": {
     ".": {
-      "default": "./dist/index.js"
-    }
+      "types": "./dist/typescript/index.d.ts",
+      "default": "./dist/module/index.js"
+    },
+    "./package.json": "./package.json"
   },
-  "version": "0.0.28"
+  "version": "0.0.28",
+  "source": "./lib/index.ts",
+  "react-native-builder-bob": {
+    "source": "lib",
+    "output": "dist",
+    "targets": [
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      "typescript"
+    ]
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "dist/"
+  ]
 }
