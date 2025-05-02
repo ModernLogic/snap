@@ -240,8 +240,9 @@ To do the same sequence of steps.
 In order to release a new version:
 
 1. Make sure all your changes are committed and pushed
-2. Run `npm run release`
-3. This will:
+2. Clean the `dist` folder via `rm -rf dist`
+3. Prepare via `npm run prepare` this invokes builder bob.
+4. Run `npm run release`. This will:
    - Bump the version number based on your commits (using conventional commits)
    - Create a git tag
    - Push the changes to GitHub
