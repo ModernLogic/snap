@@ -8,6 +8,7 @@
 import type { CliRunOptions } from '../../CliRunOptions'
 import type { Config } from '../../Config'
 import { sleep } from '../../sleep'
+import { PermissionKey } from '../../../types'
 import type { PlatformAbstractionLayer, Rect } from '../PlatformAbstractionLayer'
 import { xcrun } from './xcrun'
 
@@ -120,9 +121,23 @@ export class IOSPlatformAbstraction implements PlatformAbstractionLayer {
     await sleep(3000)
   }
 
+  private translatePermission (permission: string): string {
+    switch (permission) {
+      case PermissionKey.Location:
+        return 'location'
+      default:
+        throw new Error(`Unknown permission: ${permission}`)
+    }
+  }
+
   async revokePermissions (permissions: string[]): Promise<void> {
     for await (const permission of permissions) {
-      await xcrun(['simctl', 'privacy', this.device, 'revoke', permission, this.bundleId])
+      try {
+        const iosPermission = this.translatePermission(permission)
+        await xcrun(['simctl', 'privacy', this.device, 'revoke', iosPermission, this.bundleId])
+      } catch (e) {
+        console.log(`Could not revoke permission: ${permission}`, e)
+      }
     }
   }
 

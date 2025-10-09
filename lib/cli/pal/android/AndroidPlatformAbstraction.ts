@@ -249,10 +249,27 @@ export class AndroidPlatformAbstraction implements PlatformAbstractionLayer {
     }
   }
 
+  // TODO: Not sure if this is correct - this has it's own issue to implement
+  // private translatePermission (permission: string): string {
+  //   switch (permission) {
+  //     case PermissionKey.Location:
+  //       return 'android.permission.ACCESS_FINE_LOCATION'
+  //     default:
+  //       throw new Error(`Unknown permission: ${permission}`)
+  //   }
+  // }
+
   async revokePermissions (permissions: string[]): Promise<void> {
-    for await (const permission of permissions) {
-      console.log(`TODO: Revoke permission: ${permission}`)
-    }
+    console.log(`TODO: Implement revokePermissions for Android: ${permissions.join(', ')}`)
+    // TODO: Not sure if this is correct - this has it's own issue to implement
+    // for await (const permission of permissions) {
+    //   try {
+    //     const androidPermission = this.translatePermission(permission)
+    //     await adb(['shell', 'pm', 'revoke', this.config.android.package, androidPermission])
+    //   } catch (e) {
+    //     console.log(`Could not revoke permission: ${permission}`, e)
+    //   }
+    // }
   }
 
   async cleanup (): Promise<void> {

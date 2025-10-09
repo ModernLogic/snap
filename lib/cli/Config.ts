@@ -5,9 +5,11 @@
 //  Created by Modern Logic on 2022-11-09
 //  Copyright © 2022 Modern Logic, LLC. All Rights Reserved.
 
+import { type Permission } from '../types'
+
 export interface Config {
   packageManager?: 'npm' | 'yarn' | 'pnpm'
-  revokePermissions?: string[] // e.g. ["location", "notifications"]
+  revokePermissions?: Permission[]
   ios: {
     bundleIdentifier: string
     simulator: string
