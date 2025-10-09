@@ -54,6 +54,12 @@ const runHandlerNoTry = async (args: CliRunOptions): Promise<number> => {
       res.end('Error handling request')
     })
   }
+
+  if (config.revokePermissions != null && config.revokePermissions.length > 0) {
+    console.log('Revoking permissions...')
+    await pal.revokePermissions(config.revokePermissions)
+  }
+
   await fs.rm(`${snapshots}/latest`, { recursive: true, force: true })
   await fs.rm(`${snapshots}/diff`, { recursive: true, force: true })
   try {

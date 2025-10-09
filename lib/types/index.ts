@@ -6,5 +6,6 @@
 //  Copyright © 2022 Modern Logic, LLC. All Rights Reserved.
 
 export * from './TCommands'
+export * from './TPermission'
 export * from './TStory'
 export * from './TStorybookProps'

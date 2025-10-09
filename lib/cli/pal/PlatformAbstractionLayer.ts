@@ -1,3 +1,5 @@
+import { type Permission } from '../../types'
+
 export interface Rect {
   top: number
   left: number
@@ -17,5 +19,6 @@ export interface PlatformAbstractionLayer {
   boot: () => Promise<void>
   uninstall: () => Promise<void>
   install: () => Promise<void>
+  revokePermissions: (permissions: Permission[]) => Promise<void>
   cleanup: () => Promise<void>
 }
