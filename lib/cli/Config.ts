@@ -7,6 +7,7 @@
 
 export interface Config {
   packageManager?: 'npm' | 'yarn' | 'pnpm'
+  revokePermissions?: string[] // e.g. ["location", "notifications"]
   ios: {
     bundleIdentifier: string
     simulator: string

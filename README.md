@@ -30,7 +30,8 @@ Create `.snaprc.json` file in the root directory changing the `bundleIdentifier`
         "bundleIdentifier": "com.example.example",
         "simulator": "iPhone 13",
         "appName": "Example.app"
-    }
+    },
+    "revokePermissions" ["location"] // Optional list of permissions to revoke on sim to avoid device modals poping up in snaps
 }
 ```
 

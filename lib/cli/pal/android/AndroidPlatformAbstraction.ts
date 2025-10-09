@@ -249,6 +249,12 @@ export class AndroidPlatformAbstraction implements PlatformAbstractionLayer {
     }
   }
 
+  async revokePermissions (permissions: string[]): Promise<void> {
+    for await (const permission of permissions) {
+      console.log(`TODO: Revoke permission: ${permission}`)
+    }
+  }
+
   async cleanup (): Promise<void> {
     await this.terminate()
   }

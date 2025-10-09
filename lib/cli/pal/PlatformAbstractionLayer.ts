@@ -17,5 +17,6 @@ export interface PlatformAbstractionLayer {
   boot: () => Promise<void>
   uninstall: () => Promise<void>
   install: () => Promise<void>
+  revokePermissions: (permissions: string[]) => Promise<void>
   cleanup: () => Promise<void>
 }

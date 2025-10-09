@@ -120,6 +120,12 @@ export class IOSPlatformAbstraction implements PlatformAbstractionLayer {
     await sleep(3000)
   }
 
+  async revokePermissions (permissions: string[]): Promise<void> {
+    for await (const permission of permissions) {
+      await xcrun(['simctl', 'privacy', this.device, 'revoke', permission, this.bundleId])
+    }
+  }
+
   async cleanup (): Promise<void> {
     // console.log('Terminating app in simulator (if any)')
     try {

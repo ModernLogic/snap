@@ -87,6 +87,10 @@ export const runCiTest = async (args: CliRunOptions): Promise<number> => {
     console.log('Installing app...')
     await pal.install()
   }
+  if (config.revokePermissions != null && config.revokePermissions.length > 0) {
+    console.log('Revoking permissions...')
+    await pal.revokePermissions(config.revokePermissions)
+  }
 
   const port = await findAvailablePort()
 
